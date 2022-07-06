@@ -4,6 +4,7 @@ ARG REQUIREMENTS_FILE="requirements.${PROJECT}.build.ubuntu20.04.system"
 FROM v2x_if_ros_msg:latest AS v2x_if_ros_msg
 FROM adore_if_ros_msg:latest AS adore_if_ros_msg
 FROM coordinate_conversion:latest AS coordinate_conversion
+FROM plotlablib:latest AS plotlablib
 FROM ros:noetic-ros-core-focal AS adore_if_v2x_builder
 
 
@@ -32,9 +33,13 @@ COPY --from=coordinate_conversion /tmp/coordinate_conversion /tmp/coordinate_con
 WORKDIR /tmp/coordinate_conversion/build
 RUN cmake --install . --prefix /tmp/${PROJECT}/build/install
 
+COPY --from=plotlablib /tmp/plotlablib /tmp/plotlablib
+WORKDIR /tmp/plotlablib/build
+RUN cmake --install . --prefix /tmp/${PROJECT}/build/install
+
 
 COPY ${PROJECT} /tmp/${PROJECT}
-copy files/catkin_build.sh /tmp/${PROJECT}
+#copy files/catkin_build.sh /tmp/${PROJECT}
 
 WORKDIR /tmp/${PROJECT}
 RUN mkdir -p build 
