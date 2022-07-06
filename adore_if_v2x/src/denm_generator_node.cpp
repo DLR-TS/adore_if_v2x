@@ -12,7 +12,7 @@
  *   Stephan Lapoehn - initial API and implementation
  ********************************************************************************/
 #include <ros/ros.h>
-#include <coordinateconversion.h>
+#include <coordinate_conversion/coordinate_conversion.h>
 #include <denm_v2_denm_pdu_descriptions/DENM.h>
 
 /*
@@ -68,7 +68,7 @@ namespace adore
                 denm.denm.management.referenceTime.value = 570200647;
 
                 double lat, lon;
-                CoordinateConversion::UTMXYToLatLonDegree(denm_event_pos_x_, denm_event_pos_y_, 32, false, lat,lon);
+                adore::mad::CoordinateConversion::UTMXYToLatLonDegree(denm_event_pos_x_, denm_event_pos_y_, 32, false, lat,lon);
 
                 denm.denm.management.eventPosition.longitude.value = lon;
                 denm.denm.management.eventPosition.latitude.value = lat;

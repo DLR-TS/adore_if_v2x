@@ -66,7 +66,7 @@ namespace adore
                 position_initialized_ = false;
                 ros::init(argc, argv, nodename);
                 nh_ = new ros::NodeHandle();
-                state_subscriber_ = nh_->subscribe("localization",SREMGenerator::receive_position);
+                state_subscriber_ = nh_->subscribe("localization",1,&SREMGenerator::receive_position,this);
                 srem_publisher_ =  nh_->advertise<dsrc_v2_srem_pdu_descriptions::SREM>("v2x/outgoing/SREM",1);
                 rate_ = rate;
                 request_counter_ = 1;
@@ -310,7 +310,7 @@ namespace adore
                 }
             }
 
-             void run()
+            void run()
             {
                 ros::Rate r(rate_); 
                 while(ros::ok())send_srem();

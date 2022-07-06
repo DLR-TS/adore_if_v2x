@@ -91,20 +91,21 @@ include_directories(
 # #    src/...cpp
 # )
 # add_executable(${PROJECT_NAME}_node src/adore_if_v2x_node.cpp)
+
 add_executable(srem_generator_node)
 target_sources(srem_generator_node PRIVATE src/srem_generator_node.cpp)
 target_include_directories( srem_generator_node PRIVATE include ${catkin_INCLUDE_DIRS})
 target_link_libraries(srem_generator_node PRIVATE ${catkin_LIBRARIES} coordinate_conversion::coordinate_conversion)
 
-#add_executable(denm_generator_node)
-#target_sources(denm_generator_node PRIVATE src/denm_generator_node.cpp)
-#target_include_directories( denm_generator_node PRIVATE include ${catkin_INCLUDE_DIRS})
-#target_link_libraries(denm_generator_node PRIVATE ${catkin_LIBRARIES} )
+add_executable(denm_generator_node)
+target_sources(denm_generator_node PRIVATE src/denm_generator_node.cpp)
+target_include_directories( denm_generator_node PRIVATE include ${catkin_INCLUDE_DIRS})
+target_link_libraries(denm_generator_node PRIVATE ${catkin_LIBRARIES} coordinate_conversion::coordinate_conversion)
 
-#add_executable(denm_to_bordertypechangeprofile_node)
-#target_sources(denm_to_bordertypechangeprofile_node PRIVATE src/denm_to_bordertypechangeprofile_node.cpp)
-#target_include_directories( denm_to_bordertypechangeprofile_node PRIVATE include ${catkin_INCLUDE_DIRS})
-#target_link_libraries(denm_to_bordertypechangeprofile_node PRIVATE ${catkin_LIBRARIES} )
+add_executable(denm_to_bordertypechangeprofile_node)
+target_sources(denm_to_bordertypechangeprofile_node PRIVATE src/denm_to_bordertypechangeprofile_node.cpp)
+target_include_directories( denm_to_bordertypechangeprofile_node PRIVATE include ${catkin_INCLUDE_DIRS})
+target_link_libraries(denm_to_bordertypechangeprofile_node PRIVATE ${catkin_LIBRARIES} coordinate_conversion::coordinate_conversion)
 
 #add_executable(denm_to_checkpoint)
 #target_sources(denm_to_checkpoint PRIVATE src/denm_to_checkpoint.cpp)
@@ -178,8 +179,8 @@ target_link_libraries(srem_generator_node PRIVATE ${catkin_LIBRARIES} coordinate
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
 install(TARGETS
     srem_generator_node
-#    denm_generator_node
-#    denm_to_bordertypechangeprofile_node
+    denm_generator_node
+    denm_to_bordertypechangeprofile_node
 #    denm_to_checkpoint
 #    mcm_to_prediction_node
 #    mcm_to_platoon_node
