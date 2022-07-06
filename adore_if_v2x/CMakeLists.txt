@@ -127,10 +127,10 @@ target_link_libraries(denm_to_checkpoint PRIVATE ${catkin_LIBRARIES} coordinate_
 #target_include_directories(setpointrequest_to_mcm_node PRIVATE include ${catkin_INCLUDE_DIRS})
 #target_link_libraries(setpointrequest_to_mcm_node PRIVATE ${catkin_LIBRARIES} )
 
-#add_executable(v2x_trafficlights_node src/v2x_trafficlights_node.cpp)
-#target_sources(v2x_trafficlights_node PRIVATE src/v2x_trafficlights_node.cpp)
-#target_include_directories(v2x_trafficlights_node PRIVATE include ${catkin_INCLUDE_DIRS})
-#target_link_libraries(v2x_trafficlights_node PRIVATE ${catkin_LIBRARIES} plotlablib)
+add_executable(v2x_trafficlights_node src/v2x_trafficlights_node.cpp)
+target_sources(v2x_trafficlights_node PRIVATE src/v2x_trafficlights_node.cpp)
+target_include_directories(v2x_trafficlights_node PRIVATE include ${catkin_INCLUDE_DIRS})
+target_link_libraries(v2x_trafficlights_node PRIVATE ${catkin_LIBRARIES} coordinate_conversion::coordinate_conversion)
 
 #add_executable(denm_plotter_node)
 #target_sources(denm_plotter_node PRIVATE src/denm_plotter_node.cpp)
@@ -185,7 +185,7 @@ install(TARGETS
 #    mcm_to_prediction_node
 #    mcm_to_platoon_node
 #    setpointrequest_to_mcm_node
-#    v2x_trafficlights_node
+    v2x_trafficlights_node
 #    denm_plotter_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

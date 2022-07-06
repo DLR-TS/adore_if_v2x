@@ -17,7 +17,7 @@
 #include <ros/ros.h>
 #include <ros/console.h>
 #include <nav_msgs/Odometry.h>
-#include <coordinateconversion.h>
+#include <coordinate_conversion/coordinate_conversion.h>
 
 #include <adore_if_ros_msg/TCDConnectionStateTrace.h>
 #include <dsrc_v2_mapem_pdu_descriptions/MAPEM.h>
@@ -255,7 +255,7 @@ namespace adore
 
                             auto ingressing_node = lane.nodeList.nodes.elements[0];
 
-                            CoordinateConversion::LatLonToUTMXY(ingressing_node.delta.node_LatLon.lat.value,
+                            adore::mad::CoordinateConversion::LatLonToUTMXY(ingressing_node.delta.node_LatLon.lat.value,
                                                                             ingressing_node.delta.node_LatLon.lon.value,
                                                                             _utm_zone_, trace_first_x, trace_first_y);
 
@@ -276,7 +276,7 @@ namespace adore
                             getWGSCoordinateFromOffset((*i).second.refPoint.lat.value,
                                                        (*i).second.refPoint.long_.value, egressing_node);
 
-                            CoordinateConversion::LatLonToUTMXY(egressing_node.delta.node_LatLon.lat.value,
+                            adore::mad::CoordinateConversion::LatLonToUTMXY(egressing_node.delta.node_LatLon.lat.value,
                                                                             egressing_node.delta.node_LatLon.lon.value,
                                                                             _utm_zone_, trace_last_x, trace_last_y);
 
