@@ -4,3 +4,6 @@
 [submodule "adore_if_ros_msg"]
 	path = adore_if_ros_msg
 	url = git@github.com:DLR-TS/adore_if_ros_msg
+[submodule "coordinate_conversion"]
+	path = coordinate_conversion
+	url = git@github.com:DLR-TS/coordinate_conversion
