@@ -1,3 +1,6 @@
 [submodule "v2x_if_ros_msg"]
 	path = v2x_if_ros_msg
 	url = git@github.com:DLR-TS/v2x_if_ros_msg
+[submodule "adore_if_ros_msg"]
+	path = adore_if_ros_msg
+	url = git@github.com:DLR-TS/adore_if_ros_msg
