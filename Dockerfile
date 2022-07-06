@@ -2,6 +2,7 @@ ARG PROJECT="adore_if_v2x"
 ARG REQUIREMENTS_FILE="requirements.${PROJECT}.build.ubuntu20.04.system"
 
 FROM v2x_if_ros_msg:latest AS v2x_if_ros_msg
+FROM adore_if_ros_msg:latest AS adore_if_ros_msg
 FROM ros:noetic-ros-core-focal AS adore_if_v2x_builder
 
 
@@ -20,6 +21,10 @@ RUN apt-get update && \
 
 COPY --from=v2x_if_ros_msg /tmp/v2x_if_ros_msg /tmp/v2x_if_ros_msg
 WORKDIR /tmp/v2x_if_ros_msg/build
+RUN cmake --install . --prefix /tmp/${PROJECT}/build/install
+
+COPY --from=adore_if_ros_msg /tmp/adore_if_ros_msg /tmp/adore_if_ros_msg
+WORKDIR /tmp/adore_if_ros_msg/build
 RUN cmake --install . --prefix /tmp/${PROJECT}/build/install
 
 
