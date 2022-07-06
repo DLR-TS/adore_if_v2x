@@ -7,3 +7,6 @@
 [submodule "coordinate_conversion"]
 	path = coordinate_conversion
 	url = git@github.com:DLR-TS/coordinate_conversion
+[submodule "plotlablib"]
+	path = plotlablib
+	url = git@github.com:DLR-TS/plotlablib
