@@ -107,10 +107,10 @@ target_sources(denm_to_bordertypechangeprofile_node PRIVATE src/denm_to_borderty
 target_include_directories( denm_to_bordertypechangeprofile_node PRIVATE include ${catkin_INCLUDE_DIRS})
 target_link_libraries(denm_to_bordertypechangeprofile_node PRIVATE ${catkin_LIBRARIES} coordinate_conversion::coordinate_conversion)
 
-#add_executable(denm_to_checkpoint)
-#target_sources(denm_to_checkpoint PRIVATE src/denm_to_checkpoint.cpp)
-#target_include_directories( denm_to_checkpoint PRIVATE include ${catkin_INCLUDE_DIRS})
-#target_link_libraries(denm_to_checkpoint PRIVATE ${catkin_LIBRARIES})
+add_executable(denm_to_checkpoint)
+target_sources(denm_to_checkpoint PRIVATE src/denm_to_checkpoint.cpp)
+target_include_directories( denm_to_checkpoint PRIVATE include ${catkin_INCLUDE_DIRS})
+target_link_libraries(denm_to_checkpoint PRIVATE ${catkin_LIBRARIES} coordinate_conversion::coordinate_conversion)
 
 #add_executable(mcm_to_prediction_node)
 #target_sources(mcm_to_prediction_node PRIVATE src/mcm_to_prediction_node.cpp)
@@ -181,7 +181,7 @@ install(TARGETS
     srem_generator_node
     denm_generator_node
     denm_to_bordertypechangeprofile_node
-#    denm_to_checkpoint
+    denm_to_checkpoint
 #    mcm_to_prediction_node
 #    mcm_to_platoon_node
 #    setpointrequest_to_mcm_node
