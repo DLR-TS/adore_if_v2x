@@ -25,6 +25,9 @@ build:
         touch CATKIN_IGNORE && \
         docker build --network="host" -t ${IMAGE_NAME} . 
 	cd v2x_if_ros_msg && make 
+	cd adore_if_ros_msg && make 
+	cd plotlablib && make 
+	cd coordinate_conversion && make 
 	cd "${ROOT_DIR}" && \
         docker cp $$(docker create --rm ${IMAGE_NAME}):/tmp/${PROJECT}/build ${PROJECT}/build
 

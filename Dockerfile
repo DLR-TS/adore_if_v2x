@@ -34,7 +34,7 @@ WORKDIR /tmp/coordinate_conversion/build
 RUN cmake --install . --prefix /tmp/${PROJECT}/build/install
 
 COPY --from=plotlablib /tmp/plotlablib /tmp/plotlablib
-WORKDIR /tmp/plotlablib/build
+WORKDIR /tmp/plotlablib/plotlablib/build
 RUN cmake --install . --prefix /tmp/${PROJECT}/build/install
 
 
