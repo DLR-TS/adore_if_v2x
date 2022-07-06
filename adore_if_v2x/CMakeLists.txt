@@ -91,13 +91,10 @@ include_directories(
 # #    src/...cpp
 # )
 # add_executable(${PROJECT_NAME}_node src/adore_if_v2x_node.cpp)
-message(WARNING "adsfasdf1 ${coordinate_conversion_INCLUDE_DIRS}")
-message(WARNING "adsfasdf2 ${coordinate_conversion_INCLUDES}")
-message(WARNING "adsfasdf3 ${coordinate_conversion_FOUND}")
 add_executable(srem_generator_node)
 target_sources(srem_generator_node PRIVATE src/srem_generator_node.cpp)
-target_include_directories( srem_generator_node PRIVATE include ${catkin_INCLUDE_DIRS} coordinate_conversion)
-target_link_libraries(srem_generator_node PRIVATE ${catkin_LIBRARIES} coordinate_conversion)
+target_include_directories( srem_generator_node PRIVATE include ${catkin_INCLUDE_DIRS})
+target_link_libraries(srem_generator_node PRIVATE ${catkin_LIBRARIES} coordinate_conversion::coordinate_conversion)
 
 #add_executable(denm_generator_node)
 #target_sources(denm_generator_node PRIVATE src/denm_generator_node.cpp)
