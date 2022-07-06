@@ -12,11 +12,10 @@
  *   Jan Lauermann - initial API and implementation
  ********************************************************************************/
 #include <ros/ros.h>
-#include <adore_if_ros/baseapp.h>
-#include <adore/fun/afactory.h>
 #include <dsrc_v2_srem_pdu_descriptions/SREM.h>
 #include <dsrc_v2_dsrc/SignalRequestPackage.h>
-#include <coordinateconversion.h>
+#include <nav_msgs/Odometry.h>
+#include <coordinate_conversion/coordinate_conversion.h>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -32,37 +31,49 @@ namespace adore
 {
     namespace if_ROS
     {
-        class SREMGenerator : public Baseapp
+        class SREMGenerator 
         {
             private:
             ros::Publisher srem_publisher_;
+            ros::Subscriber state_subscriber_;
+            ros::NodeHandle* nh_;
             
             dsrc_v2_srem_pdu_descriptions::SREM srem_;
 
             std::vector<std::vector<double> > srem_zones_;
 
-            adore::mad::AReader<adore::fun::VehicleMotionState9d>* state_reader_;
-            adore::fun::VehicleMotionState9d state_;
+
             int request_counter_;
 
             DEBUGMODE debug_mode_;
             DEBUGMODE last_debug_mode_;
 
+            double rate_;
+            double x_,y_,z_,t_;
+            bool position_initialized_;
+
             public:
+            void receive_position(nav_msgs::OdometryConstPtr msg)
+            {
+                x_ = msg->pose.pose.position.x;
+                y_ = msg->pose.pose.position.y;
+                z_ = msg->pose.pose.position.z;
+                t_ = msg->header.stamp.toSec();
+                position_initialized_ = true;
+            }
             void init(int argc, char **argv, double rate, std::string nodename)
             {        
-                Baseapp::init(argc, argv, rate, nodename);
-                Baseapp::initSim();
-                std::function<void()> run_fcn = (std::bind(&SREMGenerator::run_func, this)); 
-                Baseapp::addTimerCallback(run_fcn);
-                srem_publisher_ = getRosNodeHandle()->advertise<dsrc_v2_srem_pdu_descriptions::SREM>("v2x/outgoing/SREM",1);
-                adore::if_ROS::FUN_Factory fun_factory(getRosNodeHandle());
-                state_reader_ = fun_factory.getVehicleMotionStateReader();
+                position_initialized_ = false;
+                ros::init(argc, argv, nodename);
+                nh_ = new ros::NodeHandle();
+                state_subscriber_ = nh_->subscribe("localization",SREMGenerator::receive_position);
+                srem_publisher_ =  nh_->advertise<dsrc_v2_srem_pdu_descriptions::SREM>("v2x/outgoing/SREM",1);
+                rate_ = rate;
                 request_counter_ = 1;
 
                 //read file with SREM-zones
                 std::string srem_zones_file = "";
-                getParam("PARAMS/sremZonesFile", srem_zones_file);
+                 nh_->getParam("PARAMS/sremZonesFile", srem_zones_file);
 
                 std::string line;
                 std::ifstream file(srem_zones_file);
@@ -116,7 +127,7 @@ namespace adore
 
             bool isInArea(int& connection_id, int& intersection_id)
             {
-                if((state_reader_)!=0 && state_reader_->hasData() )
+                if(position_initialized_ )
                 {
                     for(int i=0;i<srem_zones_.size();i++)
                     {
@@ -149,11 +160,9 @@ namespace adore
                             return false;
                         }
 
-                        //check if ego-vehicle is in current SREM-zone
-                        state_reader_->getData(state_);
 
-                        double xi = state_.getX();
-                        double yi = state_.getY();
+                        double xi = x_;
+                        double yi = y_;
                         int cross_counter = 0;
 
                         for(int j=0;j<srem_zone_polygon.size()-1;j++)
@@ -207,14 +216,10 @@ namespace adore
                 int connection_id = -1;
                 int intersection_id = -1;
 
-                if((state_reader_)!=0 && state_reader_->hasData() )
+                if(position_initialized_ )
                 {
-                    state_reader_->getData(state_);
 
-                    double x = state_.getX();
-                    double y = state_.getY();
-
-                    CoordinateConversion::UTMXYToLatLonDegree(x, y, 32, false, lat,lon);
+                    adore::mad::CoordinateConversion::UTMXYToLatLonDegree(x_, y_, 32, false, lat,lon);
                 }
 
                 if(isInArea(connection_id,intersection_id))
@@ -305,9 +310,10 @@ namespace adore
                 }
             }
 
-            virtual void run_func()
+             void run()
             {
-                send_srem();
+                ros::Rate r(rate_); 
+                while(ros::ok())send_srem();
             }
 
 
@@ -407,5 +413,6 @@ int main(int argc, char** argv)
     sremg.init(argc, argv, 10, "srem_generator_node");
     sremg.run();
     terminated = true;
+    ros::shutdown();
     return 0;
 }

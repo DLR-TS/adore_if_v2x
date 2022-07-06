@@ -91,50 +91,53 @@ include_directories(
 # #    src/...cpp
 # )
 # add_executable(${PROJECT_NAME}_node src/adore_if_v2x_node.cpp)
+message(WARNING "adsfasdf1 ${coordinate_conversion_INCLUDE_DIRS}")
+message(WARNING "adsfasdf2 ${coordinate_conversion_INCLUDES}")
+message(WARNING "adsfasdf3 ${coordinate_conversion_FOUND}")
 add_executable(srem_generator_node)
 target_sources(srem_generator_node PRIVATE src/srem_generator_node.cpp)
-target_include_directories( srem_generator_node PRIVATE include ${catkin_INCLUDE_DIRS})
-target_link_libraries(srem_generator_node PRIVATE ${catkin_LIBRARIES} )
+target_include_directories( srem_generator_node PRIVATE include ${catkin_INCLUDE_DIRS} coordinate_conversion)
+target_link_libraries(srem_generator_node PRIVATE ${catkin_LIBRARIES} coordinate_conversion)
 
-add_executable(denm_generator_node)
-target_sources(denm_generator_node PRIVATE src/denm_generator_node.cpp)
-target_include_directories( denm_generator_node PRIVATE include ${catkin_INCLUDE_DIRS})
-target_link_libraries(denm_generator_node PRIVATE ${catkin_LIBRARIES} )
+#add_executable(denm_generator_node)
+#target_sources(denm_generator_node PRIVATE src/denm_generator_node.cpp)
+#target_include_directories( denm_generator_node PRIVATE include ${catkin_INCLUDE_DIRS})
+#target_link_libraries(denm_generator_node PRIVATE ${catkin_LIBRARIES} )
 
-add_executable(denm_to_bordertypechangeprofile_node)
-target_sources(denm_to_bordertypechangeprofile_node PRIVATE src/denm_to_bordertypechangeprofile_node.cpp)
-target_include_directories( denm_to_bordertypechangeprofile_node PRIVATE include ${catkin_INCLUDE_DIRS})
-target_link_libraries(denm_to_bordertypechangeprofile_node PRIVATE ${catkin_LIBRARIES} adore::sim adore::mad)
+#add_executable(denm_to_bordertypechangeprofile_node)
+#target_sources(denm_to_bordertypechangeprofile_node PRIVATE src/denm_to_bordertypechangeprofile_node.cpp)
+#target_include_directories( denm_to_bordertypechangeprofile_node PRIVATE include ${catkin_INCLUDE_DIRS})
+#target_link_libraries(denm_to_bordertypechangeprofile_node PRIVATE ${catkin_LIBRARIES} )
 
-add_executable(denm_to_checkpoint)
-target_sources(denm_to_checkpoint PRIVATE src/denm_to_checkpoint.cpp)
-target_include_directories( denm_to_checkpoint PRIVATE include ${catkin_INCLUDE_DIRS})
-target_link_libraries(denm_to_checkpoint PRIVATE ${catkin_LIBRARIES} adore::sim adore::mad adore::env)
+#add_executable(denm_to_checkpoint)
+#target_sources(denm_to_checkpoint PRIVATE src/denm_to_checkpoint.cpp)
+#target_include_directories( denm_to_checkpoint PRIVATE include ${catkin_INCLUDE_DIRS})
+#target_link_libraries(denm_to_checkpoint PRIVATE ${catkin_LIBRARIES})
 
-add_executable(mcm_to_prediction_node)
-target_sources(mcm_to_prediction_node PRIVATE src/mcm_to_prediction_node.cpp)
-target_include_directories( mcm_to_prediction_node PRIVATE include ${catkin_INCLUDE_DIRS})
-target_link_libraries(mcm_to_prediction_node PRIVATE ${catkin_LIBRARIES} adore::sim adore::mad)
+#add_executable(mcm_to_prediction_node)
+#target_sources(mcm_to_prediction_node PRIVATE src/mcm_to_prediction_node.cpp)
+#target_include_directories( mcm_to_prediction_node PRIVATE include ${catkin_INCLUDE_DIRS})
+#target_link_libraries(mcm_to_prediction_node PRIVATE ${catkin_LIBRARIES} )
 
-add_executable(mcm_to_platoon_node)
-target_sources(mcm_to_platoon_node PRIVATE src/mcm_to_platoon_node.cpp)
-target_include_directories( mcm_to_platoon_node PRIVATE include ${catkin_INCLUDE_DIRS})
-target_link_libraries(mcm_to_platoon_node PRIVATE ${catkin_LIBRARIES} adore::sim adore::mad)
+#add_executable(mcm_to_platoon_node)
+#target_sources(mcm_to_platoon_node PRIVATE src/mcm_to_platoon_node.cpp)
+#target_include_directories( mcm_to_platoon_node PRIVATE include ${catkin_INCLUDE_DIRS})
+#target_link_libraries(mcm_to_platoon_node PRIVATE ${catkin_LIBRARIES} )
 
-add_executable(setpointrequest_to_mcm_node)
-target_sources(setpointrequest_to_mcm_node PRIVATE src/setpointrequest_to_mcm_node.cpp)
-target_include_directories(setpointrequest_to_mcm_node PRIVATE include ${catkin_INCLUDE_DIRS})
-target_link_libraries(setpointrequest_to_mcm_node PRIVATE ${catkin_LIBRARIES} adore::sim adore::mad )
+#add_executable(setpointrequest_to_mcm_node)
+#target_sources(setpointrequest_to_mcm_node PRIVATE src/setpointrequest_to_mcm_node.cpp)
+#target_include_directories(setpointrequest_to_mcm_node PRIVATE include ${catkin_INCLUDE_DIRS})
+#target_link_libraries(setpointrequest_to_mcm_node PRIVATE ${catkin_LIBRARIES} )
 
-add_executable(v2x_trafficlights_node src/v2x_trafficlights_node.cpp)
-target_sources(v2x_trafficlights_node PRIVATE src/v2x_trafficlights_node.cpp)
-target_include_directories(v2x_trafficlights_node PRIVATE include ${catkin_INCLUDE_DIRS})
-target_link_libraries(v2x_trafficlights_node PRIVATE ${catkin_LIBRARIES})
+#add_executable(v2x_trafficlights_node src/v2x_trafficlights_node.cpp)
+#target_sources(v2x_trafficlights_node PRIVATE src/v2x_trafficlights_node.cpp)
+#target_include_directories(v2x_trafficlights_node PRIVATE include ${catkin_INCLUDE_DIRS})
+#target_link_libraries(v2x_trafficlights_node PRIVATE ${catkin_LIBRARIES} plotlablib)
 
-add_executable(denm_plotter_node)
-target_sources(denm_plotter_node PRIVATE src/denm_plotter_node.cpp)
-target_include_directories(denm_plotter_node PRIVATE include ${catkin_INCLUDE_DIRS})
-target_link_libraries(denm_plotter_node PRIVATE ${catkin_LIBRARIES} adore::mad plotlablib)
+#add_executable(denm_plotter_node)
+#target_sources(denm_plotter_node PRIVATE src/denm_plotter_node.cpp)
+#target_include_directories(denm_plotter_node PRIVATE include ${catkin_INCLUDE_DIRS})
+#target_link_libraries(denm_plotter_node PRIVATE ${catkin_LIBRARIES} plotlablib)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -178,14 +181,14 @@ target_link_libraries(denm_plotter_node PRIVATE ${catkin_LIBRARIES} adore::mad p
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
 install(TARGETS
     srem_generator_node
-    denm_generator_node
-    denm_to_bordertypechangeprofile_node
-    denm_to_checkpoint
-    mcm_to_prediction_node
-    mcm_to_platoon_node
-    setpointrequest_to_mcm_node
-    v2x_trafficlights_node
-    denm_plotter_node
+#    denm_generator_node
+#    denm_to_bordertypechangeprofile_node
+#    denm_to_checkpoint
+#    mcm_to_prediction_node
+#    mcm_to_platoon_node
+#    setpointrequest_to_mcm_node
+#    v2x_trafficlights_node
+#    denm_plotter_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
