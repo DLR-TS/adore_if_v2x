@@ -5,6 +5,7 @@ FROM v2x_if_ros_msg:latest AS v2x_if_ros_msg
 FROM adore_if_ros_msg:latest AS adore_if_ros_msg
 FROM coordinate_conversion:latest AS coordinate_conversion
 FROM plotlablib:latest AS plotlablib
+
 FROM ros:noetic-ros-core-focal AS adore_if_v2x_builder
 
 
@@ -50,7 +51,7 @@ WORKDIR /tmp/${PROJECT}/build
 RUN source /opt/ros/noetic/setup.bash && \
     cmake .. && \
     cmake --build . --config Release --target install -- -j $(nproc) && \
-    cpack -G DEB && find . -type f -name "*.deb" | xargs mv -t . 
+    cpack -G DEB && find . -type f -name "*.deb" | xargs mv -t . || true
 
 
 #RUN source /opt/ros/noetic/setup.bash && \

@@ -18,7 +18,7 @@ add_library(${PROJECT_NAME} INTERFACE)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 set(PACKAGE_VENDOR "DLR TS-KOS-SAI")
-set(PACKAGE_DESCRIPTION ${PROJECT_NAME})
+set(PACKAGE_DESCRIPTION "Automated Driving Open Research: adore if v2x")
 set(PACKAGE_MAINTAINER "DLR TS-KOS-SAI")
 set(PACKAGE_MAINTAINER_EMAIL "ts-kos-sai@dlr.de")
 
@@ -26,7 +26,11 @@ include(GNUInstallDirs)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(Packing)
 
-set(CMAKE_PREFIX_PATH "$ENV{CMAKE_PREFIX_PATH};/tmp/v2x_if_ros_msg/build/devel;/tmp/adore_if_ros_msg/build/devel;/tmp/coordinate_conversion/build/install;/tmp/plotlablib/plotlablib/build/install")
+
+#set(CMAKE_PREFIX_PATH "$ENV{CMAKE_PREFIX_PATH};/tmp/v2x_if_ros_msg/build/devel;/tmp/adore_if_ros_msg/build/devel;/tmp/coordinate_conversion/build/install;/tmp/plotlablib/plotlablib/build/install")
+list(APPEND CMAKE_PREFIX_PATH "$ENV{CMAKE_PREFIX_PATH}")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../adore_if_ros_msg/adore_if_ros_msg/build/install")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../v2x_if_ros_msg/v2x_if_ros_msg/build/install")
 find_package(catkin REQUIRED COMPONENTS
     roscpp
     std_msgs
