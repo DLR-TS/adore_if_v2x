@@ -238,5 +238,5 @@ install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
         COMPONENT ${PROJECT_NAME}
 )
 
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/build/devel/include DESTINATION .) 
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/build/install/include DESTINATION .) 
 
