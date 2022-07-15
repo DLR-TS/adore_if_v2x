@@ -51,8 +51,11 @@ WORKDIR /tmp/${PROJECT}/build
 RUN source /opt/ros/noetic/setup.bash && \
     cmake .. && \
     cmake --build . --config Release --target install -- -j $(nproc) && \
-    cpack -G DEB && find . -type f -name "*.deb" | xargs mv -t . || true
+    cpack -G DEB && find . -type f -name "*.deb" | xargs mv -t . 
 
+
+#COPY /tmp/${PROJECT}/build/devel/lib/${PROJECT} /tmp/${PROJECT}/build/install/lib/${PROJECT}
+RUN cp -r /tmp/${PROJECT}/build/devel/lib/${PROJECT} /tmp/${PROJECT}/build/install/lib/${PROJECT}
 
 #RUN source /opt/ros/noetic/setup.bash && \
 #    cmake .. -DBUILD_adore_TESTING=ON -DCMAKE_PREFIX_PATH=install -DCMAKE_INSTALL_PREFIX:PATH=install && \
