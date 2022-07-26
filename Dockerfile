@@ -23,7 +23,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 COPY --from=v2x_if_ros_msg /tmp/v2x_if_ros_msg /tmp/v2x_if_ros_msg
-WORKDIR /tmp/v2x_if_ros_msg/build
+WORKDIR /tmp/v2x_if_ros_msg/v2x_if_ros_msg/build
 RUN cmake --install . --prefix /tmp/${PROJECT}/build/install
 
 COPY --from=adore_if_ros_msg /tmp/adore_if_ros_msg /tmp/adore_if_ros_msg
