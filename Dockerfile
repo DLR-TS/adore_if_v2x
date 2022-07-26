@@ -53,18 +53,10 @@ RUN source /opt/ros/noetic/setup.bash && \
     cmake --build . --config Release --target install -- -j $(nproc) && \
     cpack -G DEB && find . -type f -name "*.deb" | xargs mv -t . 
 
-
-#COPY /tmp/${PROJECT}/build/devel/lib/${PROJECT} /tmp/${PROJECT}/build/install/lib/${PROJECT}
 RUN cp -r /tmp/${PROJECT}/build/devel/lib/${PROJECT} /tmp/${PROJECT}/build/install/lib/${PROJECT}
 
-#RUN source /opt/ros/noetic/setup.bash && \
-#    cmake .. -DBUILD_adore_TESTING=ON -DCMAKE_PREFIX_PATH=install -DCMAKE_INSTALL_PREFIX:PATH=install && \
-#    cmake --build . --config Release --target install -- -j $(nproc) && \
-#    cpack -G DEB && find . -type f -name "*.deb" | xargs mv -t . 
-#RUN bash catkin_build.sh
+FROM alpine:3.14
 
-#FROM alpine:3.14
-
-#ARG PROJECT
-#COPY --from=adore_if_v2x_builder /tmp/${PROJECT}/build /tmp/${PROJECT}/build
+ARG PROJECT
+COPY --from=adore_if_v2x_builder /tmp/${PROJECT}/build /tmp/${PROJECT}/build
 
