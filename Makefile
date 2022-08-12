@@ -19,8 +19,12 @@ help:
 .PHONY: all
 all: build
 
+.PHONY: start_apt_cacher_ng
+start_apt_cacher_ng:
+	cd apt_cacher_ng_docker && make up
+
 .PHONY: build
-build:
+build: start_apt_cacher_ng
 	rm -rf ${ROOT_DIR}/${PROJECT}/build
 	cd v2x_if_ros_msg && make 
 	cd adore_if_ros_msg && make 
