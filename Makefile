@@ -5,7 +5,7 @@ SHELL:=/bin/bash
 PROJECT="adore_if_v2x"
 VERSION="latest"
 IMAGE_NAME="${PROJECT}:${VERSION}"
-ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+ROOT_DIR:=$(shell dirname "$(realpath $(firstword $(MAKEFILE_LIST)))")
 
 .EXPORT_ALL_VARIABLES:
 DOCKER_BUILDKIT?=1
@@ -34,7 +34,7 @@ build: start_apt_cacher_ng
         touch CATKIN_IGNORE && \
         docker build --network="host" -t ${IMAGE_NAME} . 
 	cd "${ROOT_DIR}" && \
-        docker cp $$(docker create --rm ${IMAGE_NAME}):/tmp/${PROJECT}/build ${PROJECT}/build
+        docker cp $$(docker create --rm ${IMAGE_NAME}):/tmp/${PROJECT}/build "${PROJECT}/build"
 
 .PHONY: clean 
 clean: 
