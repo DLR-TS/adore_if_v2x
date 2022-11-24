@@ -29,10 +29,23 @@ include(Packing)
 
 #set(CMAKE_PREFIX_PATH "$ENV{CMAKE_PREFIX_PATH};/tmp/v2x_if_ros_msg/build/devel;/tmp/adore_if_ros_msg/build/devel;/tmp/coordinate_conversion/build/install;/tmp/plotlablib/plotlablib/build/install")
 list(APPEND CMAKE_PREFIX_PATH "$ENV{CMAKE_PREFIX_PATH}")
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../adore_if_ros_msg/build/install")
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../v2x_if_ros_msg/v2x_if_ros_msg/build/install")
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../coordinate_conversion/build/install")
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../plotlablib/plotlablib/build/install")
+
+set(adore_v2x_sim_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../adore_v2x_sim/adore_v2x_sim/build/install")
+list(APPEND CMAKE_PREFIX_PATH "${adore_v2x_sim_CMAKE_INSTALL_PATH}")
+
+set(adore_if_ros_msg_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../adore_if_ros_msg/adore_if_ros_msg/build/install")
+list(APPEND CMAKE_PREFIX_PATH "${adore_if_ros_msg_CMAKE_INSTALL_PATH}")
+
+set(v2x_if_ros_msg_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../v2x_if_ros_msg/v2x_if_ros_msg/build/install")
+list(APPEND CMAKE_PREFIX_PATH "${v2x_if_ros_msg_CMAKE_INSTALL_PATH}")
+
+set(coordinate_conversion_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../coordinate_conversion/coordinate_conversion/build/install")
+list(APPEND CMAKE_PREFIX_PATH "${coordinate_conversion_CMAKE_INSTALL_PATH}")
+
+set(plotlablib_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../plotlablib/plotlablib/build/install")
+list(APPEND CMAKE_PREFIX_PATH "${plotlablib_CMAKE_INSTALL_PATH}")
+
+
 find_package(catkin REQUIRED COMPONENTS
     roscpp
     std_msgs
