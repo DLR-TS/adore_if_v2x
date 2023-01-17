@@ -9,6 +9,7 @@ MAKEFLAGS += --no-print-directory
 
 include coordinate_conversion/make_gadgets/make_gadgets.mk
 include coordinate_conversion/make_gadgets/docker/docker-tools.mk
+include apt_cacher_ng_docker/apt_cacher_ng_docker.mk
 
 .EXPORT_ALL_VARIABLES:
 DOCKER_BUILDKIT?=1
@@ -18,7 +19,6 @@ include adore_if_v2x.mk
 include adore_if_ros_msg/adore_if_ros_msg.mk
 include coordinate_conversion/coordinate_conversion.mk
 include v2x_if_ros_msg/v2x_if_ros_msg.mk
-include apt_cacher_ng_docker/apt_cacher_ng_docker.mk
 
 .PHONY: all
 all: build
