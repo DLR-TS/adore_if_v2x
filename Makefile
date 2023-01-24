@@ -51,6 +51,6 @@ build: set_env start_apt_cacher_ng
 .PHONY: clean 
 clean: set_env 
 	rm -rf ${ROOT_DIR}/${PROJECT}/build
-	docker rm $$(docker ps -a -q --filter "ancestor=${PROJECT}:${TAG}") 2> /dev/null || true
-	docker rmi $$(docker images -q ${PROJECT}:${TAG}) 2> /dev/null || true
+	docker rm $$(docker ps -a -q --filter "ancestor=${PROJECT}:${TAG}") --force 2> /dev/null || true
+	docker rmi $$(docker images -q ${PROJECT}:${TAG}) --force 2> /dev/null || true
  
