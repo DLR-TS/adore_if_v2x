@@ -49,7 +49,7 @@ build: set_env start_apt_cacher_ng
 	docker cp $$(docker create --rm ${PROJECT}:${TAG}):/tmp/${PROJECT}/${PROJECT}/build "${ROOT_DIR}/${PROJECT}"
 
 .PHONY: clean 
-clean: 
+clean: set_env 
 	rm -rf ${ROOT_DIR}/${PROJECT}/build
 	docker rm $$(docker ps -a -q --filter "ancestor=${PROJECT}:${TAG}") 2> /dev/null || true
 	docker rmi $$(docker images -q ${PROJECT}:${TAG}) 2> /dev/null || true
