@@ -21,6 +21,7 @@ $(info INFO: To specify alternative path for submodules use: SUBMODULES_PATH="<p
 $(info INFO: Default submodule path is: ${ADORE_IF_V2X_MAKEFILE_PATH}')
 $(error "ERROR: ${MAKE_GADGETS_PATH} does not exist. Did you clone the submodules?")
 endif
+APT_CACHER_NG_DOCKER_PATH:=${ADORE_IF_V2X_SUBMODULES_PATH}/apt_cacher_ng_docker
 REPO_DIRECTORY:=${ADORE_IF_V2X_MAKEFILE_PATH}
 
 
@@ -35,6 +36,8 @@ ADORE_IF_V2X_CMAKE_INSTALL_PATH="${ADORE_IF_V2X_CMAKE_BUILD_PATH}/install"
 
 $(info ADORE_IF_V2X_SUBMODULES_PATH: ${ADORE_IF_V2X_SUBMODULES_PATH})
 include ${MAKE_GADGETS_PATH}/make_gadgets.mk
+include ${MAKE_GADGETS_PATH}/docker/docker-tools.mk
+include ${APT_CACHER_NG_DOCKER_PATH}/apt_cacher_ng_docker.mk
 include ${ADORE_IF_V2X_SUBMODULES_PATH}/plotlablib/plotlablib.mk
 include ${ADORE_IF_V2X_SUBMODULES_PATH}/coordinate_conversion/coordinate_conversion.mk
 include ${ADORE_IF_V2X_SUBMODULES_PATH}/v2x_if_ros_msg/v2x_if_ros_msg.mk
