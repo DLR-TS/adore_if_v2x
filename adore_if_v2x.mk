@@ -3,13 +3,27 @@
 ifndef adore_if_v2x_MAKEFILE_PATH
 
 MAKEFLAGS += --no-print-directory
+MAKEFLAGS += -Wno-override
 
 .EXPORT_ALL_VARIABLES:
 ADORE_IF_V2X_PROJECT:=adore_if_v2x
 
-ADORE_IF_V2X_MAKEFILE_PATH:=$(shell realpath "$(shell dirname "$(lastword $(MAKEFILE_LIST))")")
-MAKE_GADGETS_PATH:=${ADORE_IF_V2X_MAKEFILE_PATH}/adore_if_ros_msg/make_gadgets
+ADORE_IF_V2X_MAKEFILE_PATH:=$(strip $(shell realpath "$(shell dirname "$(lastword $(MAKEFILE_LIST))")"))
+ifeq ($(SUBMODULES_PATH),)
+ADORE_IF_V2X_SUBMODULES_PATH:=${ADORE_IF_V2X_MAKEFILE_PATH}
+else
+ADORE_IF_V2X_SUBMODULES_PATH:=$(SUBMODULES_PATH)
+endif
+
+MAKE_GADGETS_PATH:=${ADORE_IF_V2X_SUBMODULES_PATH}/adore_if_ros_msg/make_gadgets
+ifeq ($(wildcard $(MAKE_GADGETS_PATH)),)
+$(info INFO: To clone submodules use: 'git submodules update --init --recursive')
+$(info INFO: To specify alternative path for submodules use: SUBMODULES_PATH="<path to submodules>" make build')
+$(info INFO: Default submodule path is: ${ADORE_IF_V2X_MAKEFILE_PATH}')
+$(error "ERROR: ${MAKE_GADGETS_PATH} does not exist. Did you clone the submodules?")
+endif
 REPO_DIRECTORY:=${ADORE_IF_V2X_MAKEFILE_PATH}
+
 
 ADORE_IF_V2X_TAG:=$(shell cd ${MAKE_GADGETS_PATH} && make get_sanitized_branch_name REPO_DIRECTORY=${REPO_DIRECTORY})
 
@@ -20,13 +34,13 @@ ADORE_IF_V2X_CMAKE_BUILD_PATH="${ADORE_IF_V2X_PROJECT}/build"
 
 ADORE_IF_V2X_CMAKE_INSTALL_PATH="${ADORE_IF_V2X_CMAKE_BUILD_PATH}/install"
 
-include ${ADORE_IF_V2X_MAKEFILE_PATH}/plotlablib/plotlablib.mk
-include ${ADORE_IF_V2X_MAKEFILE_PATH}/coordinate_conversion/coordinate_conversion.mk
-include ${ADORE_IF_V2X_MAKEFILE_PATH}/v2x_if_ros_msg/v2x_if_ros_msg.mk
-include ${ADORE_IF_V2X_MAKEFILE_PATH}/adore_if_ros_msg/adore_if_ros_msg.mk
-include ${ADORE_IF_V2X_MAKEFILE_PATH}/v2x_if_ros_msg/v2x_if_ros_msg.mk
-
-
+$(info ADORE_IF_V2X_SUBMODULES_PATH: ${ADORE_IF_V2X_SUBMODULES_PATH})
+include ${MAKE_GADGETS_PATH}/make_gadgets.mk
+include ${ADORE_IF_V2X_SUBMODULES_PATH}/plotlablib/plotlablib.mk
+include ${ADORE_IF_V2X_SUBMODULES_PATH}/coordinate_conversion/coordinate_conversion.mk
+include ${ADORE_IF_V2X_SUBMODULES_PATH}/v2x_if_ros_msg/v2x_if_ros_msg.mk
+include ${ADORE_IF_V2X_SUBMODULES_PATH}/adore_if_ros_msg/adore_if_ros_msg.mk
+include ${ADORE_IF_V2X_SUBMODULES_PATH}/v2x_if_ros_msg/v2x_if_ros_msg.mk
 
 .PHONY: build_adore_if_v2x 
 build_adore_if_v2x: ## Build adore_if_v2x
