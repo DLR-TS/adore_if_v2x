@@ -14,7 +14,7 @@ else
 ADORE_IF_V2X_SUBMODULES_PATH:=$(SUBMODULES_PATH)
 endif
 
-MAKE_GADGETS_PATH:=${ADORE_IF_V2X_SUBMODULES_PATH}/adore_if_ros_msg/make_gadgets
+MAKE_GADGETS_PATH:=${ADORE_IF_V2X_SUBMODULES_PATH}/make_gadgets
 ifeq ($(wildcard $(MAKE_GADGETS_PATH)),)
 $(info INFO: To clone submodules use: 'git submodules update --init --recursive')
 $(info INFO: To specify alternative path for submodules use: SUBMODULES_PATH="<path to submodules>" make build')
