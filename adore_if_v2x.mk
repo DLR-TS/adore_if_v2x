@@ -3,7 +3,6 @@
 ifndef adore_if_v2x_MAKEFILE_PATH
 
 MAKEFLAGS += --no-print-directory
-MAKEFLAGS += -Wno-override
 
 .EXPORT_ALL_VARIABLES:
 ADORE_IF_V2X_PROJECT:=adore_if_v2x
