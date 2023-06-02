@@ -3,7 +3,6 @@ SHELL:=/bin/bash
 .DEFAULT_GOAL := all
 
 ROOT_DIR:=$(shell dirname "$(realpath $(firstword $(MAKEFILE_LIST)))")
-MAKEFILE_PATH:=$(shell dirname "$(abspath "$(lastword $(MAKEFILE_LIST)"))")
 
 MAKEFLAGS += --no-print-directory
 
@@ -22,12 +21,8 @@ set_env:
 	$(eval TAG := ${ADORE_IF_V2X_TAG})
 
 .PHONY: build
-build: set_env start_apt_cacher_ng
+build: set_env start_apt_cacher_ng build_adore_if_ros_msg build_v2x_if_ros_msg build_plotlablib build_coordinate_conversion
 	rm -rf ${ROOT_DIR}/${PROJECT}/build
-	cd ${ADORE_IF_V2X_SUBMODULES_PATH}/adore_if_ros_msg && make build 
-	cd ${ADORE_IF_V2X_SUBMODULES_PATH}/v2x_if_ros_msg && make build 
-	cd ${ADORE_IF_V2X_SUBMODULES_PATH}/plotlablib && make build 
-	cd ${ADORE_IF_V2X_SUBMODULES_PATH}/coordinate_conversion && make build 
 	cd "${ROOT_DIR}" && \
     touch CATKIN_IGNORE
 	docker build --network host \
@@ -41,11 +36,7 @@ build: set_env start_apt_cacher_ng
 	docker cp $$(docker create --rm ${PROJECT}:${TAG}):/tmp/${PROJECT}/${PROJECT}/build "${ROOT_DIR}/${PROJECT}"
 
 .PHONY: clean_submodules
-clean_submodules:
-	cd "${ADORE_IF_V2X_SUBMODULES_PATH}/adore_if_ros_msg" && make clean 
-	cd "${ADORE_IF_V2X_SUBMODULES_PATH}/v2x_if_ros_msg" && make clean 
-	cd "${ADORE_IF_V2X_SUBMODULES_PATH}/plotlablib" && make clean 
-	cd "${ADORE_IF_V2X_SUBMODULES_PATH}/coordinate_conversion" && make clean 
+clean_submodules: clean_adore_if_ros_msg clean_plotlablib clean_coordinate_conversion clean_v2x_if_ros_msg
 
 .PHONY: clean 
 clean: set_env clean_submodules 
