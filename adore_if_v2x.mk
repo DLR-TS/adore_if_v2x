@@ -16,7 +16,7 @@ endif
 
 MAKE_GADGETS_PATH:=${ADORE_IF_V2X_SUBMODULES_PATH}/make_gadgets
 ifeq ($(wildcard $(MAKE_GADGETS_PATH)/*),)
-    $(info INFO: To clone submodules use: 'git submodules update --init --recursive')
+    $(info INFO: To clone submodules use: 'git submodule update --init --recursive')
     $(info INFO: To specify alternative path for submodules use: SUBMODULES_PATH="<path to submodules>" make build')
     $(info INFO: Default submodule path is: ${ADORE_IF_V2X_MAKEFILE_PATH}')
     $(error "ERROR: ${MAKE_GADGETS_PATH} does not exist. Did you clone the submodules?")
@@ -24,13 +24,12 @@ endif
 APT_CACHER_NG_DOCKER_PATH:=${ADORE_IF_V2X_SUBMODULES_PATH}/apt_cacher_ng_docker
 REPO_DIRECTORY:=${ADORE_IF_V2X_MAKEFILE_PATH}
 
-ADORE_IF_V2X_TAG:=$(shell cd ${MAKE_GADGETS_PATH} && make get_sanitized_branch_name REPO_DIRECTORY=${REPO_DIRECTORY})
+ADORE_IF_V2X_TAG:=$(shell cd ${MAKE_GADGETS_PATH} && make get_sanitized_branch_name REPO_DIRECTORY=${ADORE_IF_V2X_MAKEFILE_PATH})
 ADORE_IF_V2X_IMAGE:=${ADORE_IF_V2X_PROJECT}:${ADORE_IF_V2X_TAG}
 
 ADORE_IF_V2X_CMAKE_BUILD_PATH="${ADORE_IF_V2X_PROJECT}/build"
 ADORE_IF_V2X_CMAKE_INSTALL_PATH="${ADORE_IF_V2X_CMAKE_BUILD_PATH}/install"
 
-$(info ADORE_IF_V2X_SUBMODULES_PATH: ${ADORE_IF_V2X_SUBMODULES_PATH})
 include ${MAKE_GADGETS_PATH}/make_gadgets.mk
 include ${MAKE_GADGETS_PATH}/docker/docker-tools.mk
 include ${APT_CACHER_NG_DOCKER_PATH}/apt_cacher_ng_docker.mk

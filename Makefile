@@ -7,6 +7,7 @@ ROOT_DIR:=$(shell dirname "$(realpath $(firstword $(MAKEFILE_LIST)))")
 MAKEFLAGS += --no-print-directory
 
 include adore_if_v2x.mk
+include ci_teststand/ci_teststand.mk
 
 .EXPORT_ALL_VARIABLES:
 DOCKER_BUILDKIT?=1
@@ -44,3 +45,5 @@ clean: set_env clean_submodules
 	docker rm $$(docker ps -a -q --filter "ancestor=${PROJECT}:${TAG}") --force 2> /dev/null || true
 	docker rmi $$(docker images -q ${PROJECT}:${TAG}) --force 2> /dev/null || true
  
+.PHONY: test
+test: ci_test
