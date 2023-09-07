@@ -7,7 +7,7 @@ ROOT_DIR:=$(shell dirname "$(realpath $(firstword $(MAKEFILE_LIST)))")
 MAKEFLAGS += --no-print-directory
 
 include adore_if_v2x.mk
-include ci_teststand/ci_teststand.mk
+include ${ADORE_IF_V2X_SUBMODULES_PATH}/ci_teststand/ci_teststand.mk
 
 .EXPORT_ALL_VARIABLES:
 DOCKER_BUILDKIT?=1
