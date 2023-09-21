@@ -4,11 +4,14 @@ ARG ADORE_IF_ROS_MSG_TAG="latest"
 ARG V2X_IF_ROS_MSG_TAG="latest"
 ARG PLOTLABLIB_TAG="latest"
 ARG COORDINATE_CONVERSION_TAG="latest"
+ARG ADORE_SCHEDULING_TAG="latest"
 
 FROM adore_if_ros_msg:${ADORE_IF_ROS_MSG_TAG} AS adore_if_ros_msg
 FROM v2x_if_ros_msg:${V2X_IF_ROS_MSG_TAG} AS v2x_if_ros_msg
 FROM plotlablib:${PLOTLABLIB_TAG} AS plotlablib 
 FROM coordinate_conversion:${COORDINATE_CONVERSION_TAG} AS coordinate_conversion
+FROM adore_scheduling:${ADORE_SCHEDULING_TAG} AS adore_scheduling 
+FROM adore_scheduling:${ADORE_SCHEDULING_TAG} AS adore_scheduling 
 
 FROM ros:noetic-ros-core-focal AS adore_if_v2x_requirements_base
 
@@ -43,6 +46,23 @@ RUN cmake --install . --prefix ${INSTALL_PREFIX}
 COPY --from=plotlablib /tmp/plotlablib /tmp/plotlablib
 WORKDIR /tmp/plotlablib/plotlablib/build
 RUN cmake --install . --prefix ${INSTALL_PREFIX} 
+
+# adore_scheduling
+COPY --from=adore_scheduling /tmp /tmp
+SHELL ["/bin/bash", "-c"]
+ARG LIB=adore_if_ros_scheduling
+WORKDIR /tmp/${LIB}/${LIB}/build
+RUN source /opt/ros/noetic/setup.bash && \
+    cmake --install . --prefix ${INSTALL_PREFIX}
+ARG LIB=adore_if_ros_scheduling_msg
+WORKDIR /tmp/${LIB}/${LIB}/build
+RUN source /opt/ros/noetic/setup.bash && \
+    cmake --install . --prefix ${INSTALL_PREFIX}
+ARG LIB=lib_adore_scheduling
+WORKDIR /tmp/${LIB}/${LIB}/build
+RUN source /opt/ros/noetic/setup.bash && \
+    cmake --install . --prefix ${INSTALL_PREFIX}
+
 
 COPY ${PROJECT} /tmp/${PROJECT}
 

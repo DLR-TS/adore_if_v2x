@@ -6,6 +6,7 @@ ROOT_DIR:=$(shell dirname "$(realpath $(firstword $(MAKEFILE_LIST)))")
 
 MAKEFLAGS += --no-print-directory
 
+SUBMODULES_PATH?=${ROOT_DIR}
 include adore_if_v2x.mk
 include ${ADORE_IF_V2X_SUBMODULES_PATH}/ci_teststand/ci_teststand.mk
 
@@ -22,7 +23,7 @@ set_env:
 	$(eval TAG := ${ADORE_IF_V2X_TAG})
 
 .PHONY: build
-build: set_env start_apt_cacher_ng build_adore_if_ros_msg build_v2x_if_ros_msg build_plotlablib build_coordinate_conversion
+build: set_env start_apt_cacher_ng build_adore_if_ros_msg build_v2x_if_ros_msg build_plotlablib build_coordinate_conversion build_adore_scheduling
 	rm -rf ${ROOT_DIR}/${PROJECT}/build
 	cd "${ROOT_DIR}" && \
     touch CATKIN_IGNORE
@@ -32,12 +33,13 @@ build: set_env start_apt_cacher_ng build_adore_if_ros_msg build_v2x_if_ros_msg b
                  --build-arg ADORE_IF_ROS_MSG_TAG=${ADORE_IF_ROS_MSG_TAG} \
                  --build-arg V2X_IF_ROS_MSG_TAG=${V2X_IF_ROS_MSG_TAG} \
                  --build-arg PLOTLABLIB_TAG=${PLOTLABLIB_TAG} \
+                 --build-arg ADORE_SCHEDULING_TAG=${ADORE_SCHEDULING_TAG} \
                  --build-arg COORDINATE_CONVERSION_TAG=${COORDINATE_CONVERSION_TAG} .
 	cd "${ROOT_DIR}" && \
 	docker cp $$(docker create --rm ${PROJECT}:${TAG}):/tmp/${PROJECT}/${PROJECT}/build "${ROOT_DIR}/${PROJECT}"
 
 .PHONY: clean_submodules
-clean_submodules: clean_adore_if_ros_msg clean_plotlablib clean_coordinate_conversion clean_v2x_if_ros_msg
+clean_submodules: clean_adore_if_ros_msg clean_plotlablib clean_coordinate_conversion clean_v2x_if_ros_msg clean_adore_scheduling
 
 .PHONY: clean 
 clean: set_env clean_submodules 

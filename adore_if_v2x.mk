@@ -33,6 +33,7 @@ ADORE_IF_V2X_CMAKE_INSTALL_PATH="${ADORE_IF_V2X_CMAKE_BUILD_PATH}/install"
 include ${MAKE_GADGETS_PATH}/make_gadgets.mk
 include ${MAKE_GADGETS_PATH}/docker/docker-tools.mk
 include ${APT_CACHER_NG_DOCKER_PATH}/apt_cacher_ng_docker.mk
+include ${ADORE_IF_V2X_SUBMODULES_PATH}/adore_scheduling/adore_scheduling.mk
 include ${ADORE_IF_V2X_SUBMODULES_PATH}/plotlablib/plotlablib.mk
 include ${ADORE_IF_V2X_SUBMODULES_PATH}/coordinate_conversion/coordinate_conversion.mk
 include ${ADORE_IF_V2X_SUBMODULES_PATH}/v2x_if_ros_msg/v2x_if_ros_msg.mk

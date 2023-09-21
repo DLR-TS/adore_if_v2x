@@ -19,3 +19,15 @@
 [submodule "ci_teststand"]
 	path = ci_teststand
 	url = git@github.com:DLR-TS/ci_teststand.git
+[submodule "adore_scheduling"]
+	path = adore_scheduling
+	url = git@github.com:DLR-TS/adore_scheduling.git
+[submodule "lizard_docker"]
+	path = lizard_docker
+	url = git@github.com:DLR-TS/lizard_docker.git
+[submodule "cppcheck_docker"]
+	path = cppcheck_docker
+	url = git@github.com:DLR-TS/cppcheck_docker.git
+[submodule "cpplint_docker"]
+	path = cpplint_docker
+	url = git@github.com:DLR-TS/cpplint_docker.git
