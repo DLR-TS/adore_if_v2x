@@ -45,6 +45,11 @@ list(APPEND CMAKE_PREFIX_PATH "${coordinate_conversion_CMAKE_INSTALL_PATH}")
 set(plotlablib_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../plotlablib/plotlablib/build/install")
 list(APPEND CMAKE_PREFIX_PATH "${plotlablib_CMAKE_INSTALL_PATH}")
 
+set(LIBADORE_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../libadore/libadore/build/install")
+list(APPEND CMAKE_PREFIX_PATH "${LIBADORE_CMAKE_INSTALL_PATH}")
+
+set(ADORE_IF_ROS_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../adore_if_ros/adore_if_ros/build/install")
+list(APPEND CMAKE_PREFIX_PATH "${ADORE_IF_ROS_CMAKE_INSTALL_PATH}")
 
 find_package(catkin REQUIRED COMPONENTS
     roscpp
@@ -61,7 +66,27 @@ find_package(catkin REQUIRED COMPONENTS
     mcm_dmove_mcm_dmove
     coordinate_conversion
     plotlablib
+
+    
 )
+
+
+add_library(qpoases::qpoases STATIC IMPORTED GLOBAL)
+set_property(TARGET qpoases::qpoases PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/../../libadore/libadore/build/install/lib/libqpOASES.a)
+
+
+find_package(dlib CONFIG REQUIRED)
+#find_package(qpOASES CONFIG REQUIRED)
+find_package(params CONFIG REQUIRED)
+find_package(view CONFIG REQUIRED)
+find_package(mad CONFIG REQUIRED)
+find_package(fun CONFIG REQUIRED)
+find_package(env CONFIG REQUIRED)
+find_package(if_xodr CONFIG REQUIRED)
+find_package(if_r2s CONFIG REQUIRED)
+find_package(sim CONFIG REQUIRED)
+find_package(apps CONFIG REQUIRED)
+find_package(adore_if_ros CONFIG REQUIRED)
 
 ###################################
 ## catkin specific configuration ##
@@ -141,10 +166,16 @@ target_link_libraries(denm_to_checkpoint PRIVATE ${catkin_LIBRARIES} coordinate_
 #target_include_directories( mcm_to_platoon_node PRIVATE include ${catkin_INCLUDE_DIRS})
 #target_link_libraries(mcm_to_platoon_node PRIVATE ${catkin_LIBRARIES} )
 
-#add_executable(setpointrequest_to_mcm_node)
-#target_sources(setpointrequest_to_mcm_node PRIVATE src/setpointrequest_to_mcm_node.cpp)
-#target_include_directories(setpointrequest_to_mcm_node PRIVATE include ${catkin_INCLUDE_DIRS})
-#target_link_libraries(setpointrequest_to_mcm_node PRIVATE ${catkin_LIBRARIES} )
+add_executable(setpointrequest_to_mcm_node)
+target_sources(setpointrequest_to_mcm_node PRIVATE src/setpointrequest_to_mcm_node.cpp)
+target_include_directories(setpointrequest_to_mcm_node PRIVATE include ${catkin_INCLUDE_DIRS})
+target_link_libraries(setpointrequest_to_mcm_node PRIVATE ${catkin_LIBRARIES} 
+      coordinate_conversion::coordinate_conversion 
+      libadore::fun 
+      libadore::mad 
+      libadore::params
+      dlib::dlib
+      )
 
 add_executable(v2x_trafficlights_node src/v2x_trafficlights_node.cpp)
 target_sources(v2x_trafficlights_node PRIVATE src/v2x_trafficlights_node.cpp)
@@ -203,7 +234,7 @@ install(TARGETS
     denm_to_checkpoint
 #    mcm_to_prediction_node
 #    mcm_to_platoon_node
-#    setpointrequest_to_mcm_node
+    setpointrequest_to_mcm_node
     v2x_trafficlights_node
 #    denm_plotter_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

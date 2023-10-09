@@ -4,4 +4,9 @@ gcc
 g++
 python3-catkin-tools
 ros-noetic-roscpp-core
-
+#coming from adore_if_ros
+ros-noetic-tf 
+# requirements for dlib
+libblas-dev
+libopenblas-dev
+liblapack-dev

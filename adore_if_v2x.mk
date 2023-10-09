@@ -37,7 +37,9 @@ include ${ADORE_IF_V2X_SUBMODULES_PATH}/plotlablib/plotlablib.mk
 include ${ADORE_IF_V2X_SUBMODULES_PATH}/coordinate_conversion/coordinate_conversion.mk
 include ${ADORE_IF_V2X_SUBMODULES_PATH}/v2x_if_ros_msg/v2x_if_ros_msg.mk
 include ${ADORE_IF_V2X_SUBMODULES_PATH}/adore_if_ros_msg/adore_if_ros_msg.mk
+include ${ADORE_IF_V2X_SUBMODULES_PATH}/adore_if_ros/adore_if_ros.mk
 include ${ADORE_IF_V2X_SUBMODULES_PATH}/v2x_if_ros_msg/v2x_if_ros_msg.mk
+include ${ADORE_IF_V2X_SUBMODULES_PATH}/libadore/libadore.mk
 
 .PHONY: clear_env
 clear_env:
