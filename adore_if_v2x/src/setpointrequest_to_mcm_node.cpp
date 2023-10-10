@@ -13,7 +13,7 @@
  ********************************************************************************/
 #include <ros/ros.h>
 //#include <adore_if_ros/baseapp.h>
-#include <adore_if_ros/funfactory.h>
+//#include <adore_if_ros/funfactory.h>
 #include <adore/fun/afactory.h>
 #include <adore/params/afactory.h>
 //#include <adore_if_ros/paramsfactory.h>
@@ -76,19 +76,19 @@ class setpointrequest_to_mcm
         ros::init(argc, argv, nodename);
         //ros::init(argc, argv, rate, nodename);
         //Baseapp::initSim();
-        nh_ = new ros::NodeHandle();
-        setPointRequest_publisher = nh_ ->advertise<mcm_dmove_mcm_dmove::MCM>("MCM_out",1);
-        setPointRequest_publisher_sim = nh_ ->advertise<mcm_dmove_mcm_dmove::MCM>("v2x/outgoing/MCM",1);
+        //nh_ = new ros::NodeHandle();
+        //setPointRequest_publisher = nh_ ->advertise<mcm_dmove_mcm_dmove::MCM>("MCM_out",1);
+        //setPointRequest_publisher_sim = nh_ ->advertise<mcm_dmove_mcm_dmove::MCM>("v2x/outgoing/MCM",1);
         //std::function<void()> run_fcn = (std::bind(&setpointrequest_to_mcm::run_func, this));
-        adore::if_ROS::FUN_Factory fun_factory(nh_ );
-        adore::if_ROS::PARAMS_Factory params_factory(*nh_ ,"");
-        pvehicle_ = params_factory.getVehicle();
-        ntr_reader_ = fun_factory.getNominalTrajectoryReader();
-        state_reader_ = fun_factory.getVehicleMotionStateReader();
-        platooningstate_reader = fun_factory.getPlatooningStateReader();
-        vehicle_a = pvehicle_->get_a();
-        vehicle_b = pvehicle_->get_b();
-        vehicle_c = pvehicle_->get_c();  
+        //adore::if_ROS::FUN_Factory fun_factory(nh_ );
+        //adore::if_ROS::PARAMS_Factory params_factory(*nh_ ,"");
+        //pvehicle_ = params_factory.getVehicle();
+        //ntr_reader_ = fun_factory.getNominalTrajectoryReader();
+        //state_reader_ = fun_factory.getVehicleMotionStateReader();
+        ///platooningstate_reader = fun_factory.getPlatooningStateReader();
+        //vehicle_a = pvehicle_->get_a();
+        //vehicle_b = pvehicle_->get_b();
+        //vehicle_c = pvehicle_->get_c();  
         //Baseapp::addTimerCallback(run_fcn);    
       }
       boost::posix_time::time_duration::tick_type milliseconds_since_epoch()
@@ -138,8 +138,7 @@ class setpointrequest_to_mcm
           msg.maneuverCoordination.mcmParameters.maneuverContainer.vehicleManeuver.heading.headingValue.value = PSI; 
           int factor = 1;
 					static const int MAX_POINTS_IN_MSG = 30; //MCM defined max number
-					if(trajectory_data.nc()>=MAX_POINTS_IN_MSG*2)
-					{
+					if(trajectory_data.nc()>=MAX_POINTS_IN_MSG*2) {
 						factor = std::floor((double)trajectory_data.nc()/(double)MAX_POINTS_IN_MSG);
 						NumPointsPlannedTrajectory = MAX_POINTS_IN_MSG;
 					}
@@ -233,7 +232,7 @@ int main(int argc,char **argv)
 
     adore::if_ROS::setpointrequest_to_mcm sprtmcm;
     sprtmcm.init(argc, argv, 20., "setpointrequest_to_mcm_node");
-    ROS_INFO("setpointrequest_to_mcm_node namespace is: %s", sprtmcm.nh_ ->getNamespace().c_str());
+    //ROS_INFO("setpointrequest_to_mcm_node namespace is: %s", sprtmcm.nh_ ->getNamespace().c_str());
     sprtmcm.run();
     return 0;
 

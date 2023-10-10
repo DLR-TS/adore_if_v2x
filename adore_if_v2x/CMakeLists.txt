@@ -174,7 +174,7 @@ target_link_libraries(setpointrequest_to_mcm_node PRIVATE ${catkin_LIBRARIES}
       libadore::mad 
       libadore::params
       dlib::dlib
-      )
+)
 
 add_executable(v2x_trafficlights_node src/v2x_trafficlights_node.cpp)
 target_sources(v2x_trafficlights_node PRIVATE src/v2x_trafficlights_node.cpp)
@@ -253,10 +253,6 @@ install(DIRECTORY include/${PROJECT_NAME}/
   FILES_MATCHING PATTERN "*.h"
   PATTERN ".svn" EXCLUDE
 )
-
-
-
-
 
 ## Mark cpp header files for installation
 install(TARGETS ${PROJECT_NAME}
