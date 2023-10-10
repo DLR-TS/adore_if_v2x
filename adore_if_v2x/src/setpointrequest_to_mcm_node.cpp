@@ -13,6 +13,7 @@
  ********************************************************************************/
 #include <ros/ros.h>
 //#include <adore_if_ros/baseapp.h>
+#include <adore_if_ros/funfactory.h>
 #include <adore/fun/afactory.h>
 #include <adore/params/afactory.h>
 //#include <adore_if_ros/paramsfactory.h>

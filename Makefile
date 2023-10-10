@@ -22,7 +22,7 @@ set_env:
 	$(eval TAG := ${ADORE_IF_V2X_TAG})
 
 .PHONY: build
-build: set_env start_apt_cacher_ng build_adore_if_ros_msg build_v2x_if_ros_msg build_plotlablib build_coordinate_conversion
+build: set_env start_apt_cacher_ng build_adore_if_ros_msg build_v2x_if_ros_msg build_plotlablib build_coordinate_conversion build_libadore
 	rm -rf ${ROOT_DIR}/${PROJECT}/build
 	cd "${ROOT_DIR}" && \
     touch CATKIN_IGNORE
@@ -30,7 +30,6 @@ build: set_env start_apt_cacher_ng build_adore_if_ros_msg build_v2x_if_ros_msg b
                  --tag ${PROJECT}:${TAG} \
                  --build-arg PROJECT=${PROJECT} \
                  --build-arg ADORE_IF_ROS_MSG_TAG=${ADORE_IF_ROS_MSG_TAG} \
-				 --build-arg ADORE_IF_ROS_TAG=${ADORE_IF_ROS_TAG} \
                  --build-arg V2X_IF_ROS_MSG_TAG=${V2X_IF_ROS_MSG_TAG} \
                  --build-arg PLOTLABLIB_TAG=${PLOTLABLIB_TAG} \
 				 --build-arg LIBADORE_TAG=${LIBADORE_TAG} \

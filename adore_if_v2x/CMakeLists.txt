@@ -30,20 +30,20 @@ include(Packing)
 #set(CMAKE_PREFIX_PATH "$ENV{CMAKE_PREFIX_PATH};/tmp/v2x_if_ros_msg/build/devel;/tmp/adore_if_ros_msg/build/devel;/tmp/coordinate_conversion/build/install;/tmp/plotlablib/plotlablib/build/install")
 list(APPEND CMAKE_PREFIX_PATH "$ENV{CMAKE_PREFIX_PATH}")
 
-set(adore_v2x_sim_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../adore_v2x_sim/adore_v2x_sim/build/install")
-list(APPEND CMAKE_PREFIX_PATH "${adore_v2x_sim_CMAKE_INSTALL_PATH}")
+set(ADORE_V2X_SIM_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../adore_v2x_sim/adore_v2x_sim/build/install")
+list(APPEND CMAKE_PREFIX_PATH "${ADORE_V2X_SIM_CMAKE_INSTALL_PATH}")
 
-set(adore_if_ros_msg_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../adore_if_ros_msg/adore_if_ros_msg/build/install")
-list(APPEND CMAKE_PREFIX_PATH "${adore_if_ros_msg_CMAKE_INSTALL_PATH}")
+set(ADORE_IF_ROS_MSG_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../adore_if_ros_msg/adore_if_ros_msg/build/install")
+list(APPEND CMAKE_PREFIX_PATH "${ADORE_IF_ROS_MSG_CMAKE_INSTALL_PATH}")
 
-set(v2x_if_ros_msg_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../v2x_if_ros_msg/v2x_if_ros_msg/build/install")
-list(APPEND CMAKE_PREFIX_PATH "${v2x_if_ros_msg_CMAKE_INSTALL_PATH}")
+set(V2X_IF_ROS_MSG_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../v2x_if_ros_msg/v2x_if_ros_msg/build/install")
+list(APPEND CMAKE_PREFIX_PATH "${V2X_IF_ROS_MSG_CMAKE_INSTALL_PATH}")
 
-set(coordinate_conversion_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../coordinate_conversion/coordinate_conversion/build/install")
-list(APPEND CMAKE_PREFIX_PATH "${coordinate_conversion_CMAKE_INSTALL_PATH}")
+set(COORDINATE_CONVERSION_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../coordinate_conversion/coordinate_conversion/build/install")
+list(APPEND CMAKE_PREFIX_PATH "${COORDINATE_CONVERSION_CMAKE_INSTALL_PATH}")
 
-set(plotlablib_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../plotlablib/plotlablib/build/install")
-list(APPEND CMAKE_PREFIX_PATH "${plotlablib_CMAKE_INSTALL_PATH}")
+set(PLOTLABLIB_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../plotlablib/plotlablib/build/install")
+list(APPEND CMAKE_PREFIX_PATH "${PLOTLABLIB_CMAKE_INSTALL_PATH}")
 
 set(LIBADORE_CMAKE_INSTALL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../libadore/libadore/build/install")
 list(APPEND CMAKE_PREFIX_PATH "${LIBADORE_CMAKE_INSTALL_PATH}")
@@ -86,7 +86,6 @@ find_package(if_xodr CONFIG REQUIRED)
 find_package(if_r2s CONFIG REQUIRED)
 find_package(sim CONFIG REQUIRED)
 find_package(apps CONFIG REQUIRED)
-find_package(adore_if_ros CONFIG REQUIRED)
 
 ###################################
 ## catkin specific configuration ##

@@ -1,14 +1,12 @@
 ARG PROJECT="adore_if_v2x"
 
 ARG ADORE_IF_ROS_MSG_TAG="latest"
-ARG ADORE_IF_ROS_TAG="latest"
 ARG V2X_IF_ROS_MSG_TAG="latest"
 ARG PLOTLABLIB_TAG="latest"
 ARG COORDINATE_CONVERSION_TAG="latest"
 ARG LIBADORE_TAG="latest"
 
 FROM adore_if_ros_msg:${ADORE_IF_ROS_MSG_TAG} AS adore_if_ros_msg
-FROM adore_if_ros:${ADORE_IF_ROS_TAG} AS adore_if_ros
 FROM v2x_if_ros_msg:${V2X_IF_ROS_MSG_TAG} AS v2x_if_ros_msg
 FROM plotlablib:${PLOTLABLIB_TAG} AS plotlablib 
 FROM coordinate_conversion:${COORDINATE_CONVERSION_TAG} AS coordinate_conversion
@@ -34,11 +32,6 @@ RUN mkdir -p "${INSTALL_PREFIX}"
 
 ARG LIB=libadore
 COPY --from=libadore /tmp/${LIB} /tmp/${LIB}
-WORKDIR /tmp/${LIB}/${LIB}/build
-RUN cmake --install . --prefix ${INSTALL_PREFIX} 
-
-ARG LIB=adore_if_ros
-COPY --from=adore_if_ros /tmp/${LIB} /tmp/${LIB}
 WORKDIR /tmp/${LIB}/${LIB}/build
 RUN cmake --install . --prefix ${INSTALL_PREFIX} 
 
@@ -75,7 +68,7 @@ RUN source /opt/ros/noetic/setup.bash && \
     cmake .. && \
     cmake --build . --config Release --target install -- -j $(nproc) && \
     cpack -G DEB && find . -type f -name "*.deb" | xargs mv -t . && \
-    mv CMakeCache.txt CMakeCache.txt.build 
+    mv CMakeCache.txt CMakeCache.txt.build
 
 #RUN cp -r /tmp/${PROJECT}/build/devel/lib/${PROJECT} /tmp/${PROJECT}/build/install/lib/${PROJECT}
 
