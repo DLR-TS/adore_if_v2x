@@ -21,8 +21,14 @@ set_env:
 	$(eval PROJECT := ${ADORE_IF_V2X_PROJECT}) 
 	$(eval TAG := ${ADORE_IF_V2X_TAG})
 
+.PHONY: build_develop
+build_develop: start_apt_cacher_ng _build 
+
 .PHONY: build
-build: set_env start_apt_cacher_ng build_adore_if_ros_msg build_v2x_if_ros_msg build_plotlablib build_coordinate_conversion build_libadore
+build: start_apt_cacher_ng build_adore_if_ros_msg build_v2x_if_ros_msg build_plotlablib build_coordinate_conversion build_libadore _build
+
+.PHONY: _build
+_build: set_env
 	rm -rf ${ROOT_DIR}/${PROJECT}/build
 	cd "${ROOT_DIR}" && \
     touch CATKIN_IGNORE
