@@ -49,7 +49,7 @@ class setpointrequest_to_mcm
       //adore::fun::SetPointRequest spr_;
       //adore::fun::VehicleMotionState9d state_;
       ros::Subscriber SetPointRequestSubscriber;   
-      ros::Publisher setPointRequest_publisher; 
+      ros::Publisher MCM_publisher; 
       mcm_dmove_mcm_dmove::TrajectoryPoint tj_point;
       mcm_dmove_mcm_dmove::PlannedTrajectory pl_tj ;  
       adore::params::APVehicle* pvehicle_;    
@@ -63,6 +63,7 @@ class setpointrequest_to_mcm
       double vehicle_b; //rear axle to cog
       double vehicle_c; //front axle to front border
       double vehicle_d; //rear border to rear axle
+      double vehicle_width;
       double rate;
       ros::NodeHandle* nh_;
   
@@ -80,23 +81,14 @@ class setpointrequest_to_mcm
         last_t_ = -1.0;
         this->rate = rate;
         ros::init(argc, argv, nodename);
-        //ros::init(argc, argv, rate, nodename);
-        //Baseapp::initSim();
          nh_ = new ros::NodeHandle();
-         SetPointRequestSubscriber= nh_->subscribe("localization",1,&setpointrequest_to_mcm::receive_spr,this);
-        //setPointRequest_publisher = nh_ ->advertise<mcm_dmove_mcm_dmove::MCM>("MCM_out",1);
-        //setPointRequest_publisher_sim = nh_ ->advertise<mcm_dmove_mcm_dmove::MCM>("v2x/outgoing/MCM",1);
-        //std::function<void()> run_fcn = (std::bind(&setpointrequest_to_mcm::run_func, this));
-        //adore::if_ROS::FUN_Factory fun_factory(nh_ );
-        //adore::if_ROS::PARAMS_Factory params_factory(*nh_ ,"");
-        //pvehicle_ = params_factory.getVehicle();
-        //ntr_reader_ = fun_factory.getNominalTrajectoryReader();
-        //state_reader_ = fun_factory.getVehicleMotionStateReader();
+         SetPointRequestSubscriber= nh_->subscribe("FUN/SetPointRequest",1,&setpointrequest_to_mcm::receive_spr,this);
+         MCM_publisher = nh_ ->advertise<mcm_dmove_mcm_dmove::MCM>("v2x/MCM",1);
         ///platooningstate_reader = fun_factory.getPlatooningStateReader();
-        //vehicle_a = pvehicle_->get_a();
-        //vehicle_b = pvehicle_->get_b();
-        //vehicle_c = pvehicle_->get_c();  
-        //Baseapp::addTimerCallback(run_fcn);    
+        nh_->getParam("PARAMS/Vehicle/a", vehicle_a);
+        nh_->getParam("PARAMS/Vehicle/b", vehicle_b);
+        nh_->getParam("PARAMS/Vehicle/c", vehicle_c);
+        nh_->getParam("PARAMS/Vehicle/bodyWidth", vehicle_width);  
       }
       boost::posix_time::time_duration::tick_type milliseconds_since_epoch()
        {
@@ -110,90 +102,63 @@ class setpointrequest_to_mcm
       {
         return milliseconds_since_epoch()%65536;
       }  
-      void receive_spr(nav_msgs::OdometryConstPtr msg)
+      void receive_spr(adore_if_ros_msg::SetPointRequestConstPtr msg_spr)
       {
-        //ROS_INFO("receive_spr");
-        //ROS_INFO("receive_spr");
-        //std::cout<<"\nMCM";
-        //auto sp = msg.get()->setPoints;
+        auto sp = msg_spr.get()->setPoints;
         //std::cout<<"\n"<<sp[0];
-         ROS_INFO("Received:");
-
-      }         
-      void readSetPointRequest()
-      {
-        // ROS_INFO("readSetPointRequest");
-        //std::cout<<"\nMCM";
-        //subscriber_ = nh_->subscribe("v2x/incoming/DENM",1,&denm_to_bordertypechangeprofile::receive_denm,this);
-        
-  
-        /*
-        nh_ ->getParam("PARAMS/UTMZone", utm_zone_);
-        nh_ ->getParam("PARAMS/SouthHemi",southern_hemisphere);
-        nh_ ->getParam("v2xStationID", v2xStationID);        
+        nh_->getParam("PARAMS/UTMZone", utm_zone_);
+        nh_->getParam("PARAMS/SouthHemi",southern_hemisphere);
+        nh_->getParam("v2xStationID", v2xStationID);        
         msg.header.stationID.value = v2xStationID;
-        nh_ ->getParam("PARAMS/nlp_planner/MCM_senser_debug_level", debug_level);
-        if( ntr_reader_!=0 && ntr_reader_->hasData() && state_reader_!=0 && state_reader_->hasData() )
+        msg.maneuverCoordination.generationDeltaTime.value = getGenerationDeltaTime();
+        double X, Y,PSI, T;
+        int NumPointsPlannedTrajectory;
+        X= sp[0].X;
+        Y= sp[0].Y;
+        double x, y;
+        x= X;
+        y = Y;          
+        PSI= sp[0].PSI;
+        T = sp[0].tStart; 
+        PSI = adore::mad::CoordinateConversion::twoPIrange(PSI); 
+        toCenterOfTheFrontSide(x,y,PSI);     
+        adore::mad::CoordinateConversion::UTMXYToLatLonDegree(x,y,utm_zone_,southern_hemisphere,lat,lon);
+        msg.maneuverCoordination.mcmParameters.basicContainer.referencePosition.latitude.value = adore::mad::bound(- 90.,(lat),  90.);
+        msg.maneuverCoordination.mcmParameters.basicContainer.referencePosition.longitude.value = adore::mad::bound(-180.,(lon),180.);
+        msg.maneuverCoordination.mcmParameters.maneuverContainer.vehicleManeuver.heading.headingValue.value = PSI; 
+        int factor = 1;
+				static const int MAX_POINTS_IN_MSG = 30; //MCM defined max number  
+        int spr_size = sp.size(); 
+				if(spr_size>=MAX_POINTS_IN_MSG*2) {
+					factor = std::floor((double)spr_size/(double)MAX_POINTS_IN_MSG);
+					NumPointsPlannedTrajectory = MAX_POINTS_IN_MSG;
+				}
+				else{
+					NumPointsPlannedTrajectory = std::min((int)MAX_POINTS_IN_MSG,(int)spr_size);
+				}              
+        std::cout<<"\n"<<utm_zone_<<"\t"<<X<<"\t"<<Y<<"\t"<<spr_size;
+        pl_tj.elements.clear() ; 
+        pl_tj.count= NumPointsPlannedTrajectory;
+				for( int i=0;i<NumPointsPlannedTrajectory;i++)  //sparsing
 				{
-          msg.maneuverCoordination.generationDeltaTime.value = getGenerationDeltaTime();
-					state_reader_->getData(state_);
-				  const double t = state_.getTime();
-          ntr_reader_->getData(spr_tmp_);
-          if(spr_tmp_.isActive(t))spr_ = spr_tmp_;
-          auto trajectory_data = spr_.getTrajectory().getData();
-          double X, Y,PSI, T;
-          int NumPointsPlannedTrajectory;
-          X= trajectory_data(1,0);
-          Y= trajectory_data(2,0);
-          double x, y;
-          x= X;
-          y = Y;          
-          PSI= trajectory_data(3,0);
-          T = trajectory_data(0,0);
-          
- 
-          PSI = adore::mad::CoordinateConversion::twoPIrange(PSI);
-          toCenterOfTheFrontSide(x,y,PSI);
-      
-          adore::mad::CoordinateConversion::UTMXYToLatLonDegree(x,y,utm_zone_,southern_hemisphere,lat,lon);
-          msg.maneuverCoordination.mcmParameters.basicContainer.referencePosition.latitude.value = adore::mad::bound(- 90.,(lat),  90.);
-          msg.maneuverCoordination.mcmParameters.basicContainer.referencePosition.longitude.value = adore::mad::bound(-180.,(lon),180.);
-          msg.maneuverCoordination.mcmParameters.maneuverContainer.vehicleManeuver.heading.headingValue.value = PSI; 
-          int factor = 1;
-					static const int MAX_POINTS_IN_MSG = 30; //MCM defined max number
-					if(trajectory_data.nc()>=MAX_POINTS_IN_MSG*2) {
-						factor = std::floor((double)trajectory_data.nc()/(double)MAX_POINTS_IN_MSG);
-						NumPointsPlannedTrajectory = MAX_POINTS_IN_MSG;
-					}
-					else
-					{
-						NumPointsPlannedTrajectory = std::min((int)MAX_POINTS_IN_MSG,(int)trajectory_data.nc());
-					}
-          pl_tj.elements.clear() ; 
-          pl_tj.count= NumPointsPlannedTrajectory;
-					for( int i=0;i<NumPointsPlannedTrajectory;i++)  //sparsing
-					{
-            tj_point.deltaTimeCs.value = (unsigned int)((trajectory_data(0,i*factor)-T)*10.0);
-						tj_point.deltaXCm.value = (int)((trajectory_data(1,i*factor)-X)*100.0);
-						tj_point.deltaYCm.value = (int)((trajectory_data(2,i*factor)-Y)*100.0);
+            tj_point.deltaTimeCs.value = (unsigned int)((sp[i*factor].tStart-T)*10.0);
+						tj_point.deltaXCm.value = (int)((sp[i*factor].X-X)*100.0);
+						tj_point.deltaYCm.value = (int)((sp[i*factor].Y-Y)*100.0);
             tj_point.absSpeedPresent = true;
-						tj_point.absSpeed.value = (double)std::abs(trajectory_data(4,i*factor));
+						tj_point.absSpeed.value = (double)std::abs(sp[i*factor].vx);
             tj_point.headingValuePresent = true;
-            double heading = adore::mad::CoordinateConversion::twoPIrange(trajectory_data(3,i*factor));
+            double heading = adore::mad::CoordinateConversion::twoPIrange(sp[i*factor].PSI);
             heading = adore::mad::CoordinateConversion::RadToDeg(heading);
             tj_point.headingValue.value = heading;//adore::mad::bound(tj_point.headingValue.MIN, heading, tj_point.headingValue.MAX);
             pl_tj.elements.push_back(tj_point);
-						T = trajectory_data(0,i*factor);
-						X = trajectory_data(1,i*factor);
-						Y = trajectory_data(2,i*factor);       
-					}    
-          
-          msg.maneuverCoordination.mcmParameters.maneuverContainer.vehicleManeuver.plannedTrajectory = pl_tj;  ;    
-          msg.maneuverCoordination.mcmParameters.maneuverContainer.vehicleManeuver.vehicleLength.vehicleLengthValue.value = vehicle_a + vehicle_b + vehicle_c + vehicle_d;
-           msg.maneuverCoordination.mcmParameters.maneuverContainer.vehicleManeuver.vehicleWidth.value = pvehicle_->get_bodyWidth();
-          
-        }
-        if(platooningstate_reader!=0 && platooningstate_reader->hasData())    
+						T = sp[i*factor].tStart;
+						X = sp[i*factor].X;
+						Y = sp[i*factor].Y;       
+				}   
+        msg.maneuverCoordination.mcmParameters.maneuverContainer.vehicleManeuver.plannedTrajectory = pl_tj;  ;    
+        msg.maneuverCoordination.mcmParameters.maneuverContainer.vehicleManeuver.vehicleLength.vehicleLengthValue.value = vehicle_a + vehicle_b + vehicle_c + vehicle_d;
+        msg.maneuverCoordination.mcmParameters.maneuverContainer.vehicleManeuver.vehicleWidth.value = vehicle_width;
+        /*if(platooningstate_reader!=0 && platooningstate_reader->hasData())    
         {
           platooningstate_reader->getData(platoonInformation);
           if(platoonInformation.getId() == v2xStationID)
@@ -205,23 +170,11 @@ class setpointrequest_to_mcm
             msg.maneuverCoordination.mcmParameters.maneuverContainer.vehicleManeuver.lanePosition.value =     (int)platoonInformation.getLanePosition(); 
 
           }
-        }
-        print_debug(msg, platoonInformation);
-        */
-        
-      }
-    virtual void run_func()
-    {
-      readSetPointRequest();
-     // setPointRequest_publisher.publish(msg); 
-     // setPointRequest_publisher_sim.publish(msg);
-        
-    }
-    void run()
-    {
-    ros::Rate r(rate); 
-    while(ros::ok())run_func();
-    }  
+        }*/ 
+        MCM_publisher.publish(msg);       
+      }         
+
+ 
     /*  
     void print_debug(mcm_dmove_mcm_dmove::MCM msg, adore::fun::PlatooningInformation platoonInformation)
     {
@@ -239,12 +192,13 @@ class setpointrequest_to_mcm
 
       }
     }
+    */
     void toCenterOfTheFrontSide(double &x, double &y, double psi )
     {
       x = x  +  std::cos(psi)*(vehicle_a+vehicle_b+vehicle_c) ;
       y = y  +  std::sin(psi)*(vehicle_a+vehicle_b+vehicle_c) ;
     }
-*/
+
 };
 } // namespace if_ROS
 } // namespace adore
@@ -258,7 +212,7 @@ int main(int argc,char **argv)
     adore::if_ROS::setpointrequest_to_mcm sprtmcm;
     sprtmcm.init(argc, argv, 20., "setpointrequest_to_mcm_node");
     //ROS_INFO("setpointrequest_to_mcm_node namespace is: %s", sprtmcm.nh_ ->getNamespace().c_str());
-    //sprtmcm.run();
+    sprtmcm.run();
     ros::Rate rate(20.);
     ros::spin();
     return 0;
