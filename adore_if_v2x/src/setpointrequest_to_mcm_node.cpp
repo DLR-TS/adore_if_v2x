@@ -12,6 +12,7 @@
  *   Reza Dariani - initial API and implementation 
  ********************************************************************************/
 #include <ros/ros.h>
+#include <iostream>
 //#include <adore_if_ros/baseapp.h>
 //#include <adore_if_ros/funfactory.h>
 #include <adore/fun/afactory.h>
@@ -22,6 +23,9 @@
 #include <mcm_dmove_mcm_dmove/MCM.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/gregorian/gregorian.hpp>
+#include <adore_if_ros_msg/SetPointRequest.h>
+#include <nav_msgs/Odometry.h>
+
 
 
 
@@ -36,16 +40,16 @@ class setpointrequest_to_mcm
 {
   private: 
       mcm_dmove_mcm_dmove::MCM msg;
-      adore::mad::AReader<adore::fun::SetPointRequest>* ntr_reader_;  
-      adore::mad::AReader<adore::fun::VehicleMotionState9d>* state_reader_;
-      adore::mad::AReader<adore::fun::PlatooningInformation>* platooningstate_reader;
-      adore::fun::PlatooningInformation platoonInformation;       
+      //adore::mad::AReader<adore::fun::SetPointRequest>* ntr_reader_;  
+      //adore::mad::AReader<adore::fun::VehicleMotionState9d>* state_reader_;
+      //adore::mad::AReader<adore::fun::PlatooningInformation>* platooningstate_reader;
+      //adore::fun::PlatooningInformation platoonInformation;       
       //adore::params::APVehicle* ap_vehicle_;
-      adore::fun::SetPointRequest spr_tmp_;  
-      adore::fun::SetPointRequest spr_;
-      adore::fun::VehicleMotionState9d state_;
+      //adore::fun::SetPointRequest spr_tmp_;  
+      //adore::fun::SetPointRequest spr_;
+      //adore::fun::VehicleMotionState9d state_;
+      ros::Subscriber SetPointRequestSubscriber;   
       ros::Publisher setPointRequest_publisher; 
-      ros::Publisher setPointRequest_publisher_sim; 
       mcm_dmove_mcm_dmove::TrajectoryPoint tj_point;
       mcm_dmove_mcm_dmove::PlannedTrajectory pl_tj ;  
       adore::params::APVehicle* pvehicle_;    
@@ -70,13 +74,16 @@ class setpointrequest_to_mcm
       }
       void init(int argc, char **argv, double rate, std::string nodename)
       {
+        std::cout<<"\ninit function";
+        ROS_INFO("INIT");
         v2xStationID = 0;      
         last_t_ = -1.0;
         this->rate = rate;
         ros::init(argc, argv, nodename);
         //ros::init(argc, argv, rate, nodename);
         //Baseapp::initSim();
-        //nh_ = new ros::NodeHandle();
+         nh_ = new ros::NodeHandle();
+         SetPointRequestSubscriber= nh_->subscribe("localization",1,&setpointrequest_to_mcm::receive_spr,this);
         //setPointRequest_publisher = nh_ ->advertise<mcm_dmove_mcm_dmove::MCM>("MCM_out",1);
         //setPointRequest_publisher_sim = nh_ ->advertise<mcm_dmove_mcm_dmove::MCM>("v2x/outgoing/MCM",1);
         //std::function<void()> run_fcn = (std::bind(&setpointrequest_to_mcm::run_func, this));
@@ -102,9 +109,25 @@ class setpointrequest_to_mcm
       int getGenerationDeltaTime()
       {
         return milliseconds_since_epoch()%65536;
-      }     
+      }  
+      void receive_spr(nav_msgs::OdometryConstPtr msg)
+      {
+        //ROS_INFO("receive_spr");
+        //ROS_INFO("receive_spr");
+        //std::cout<<"\nMCM";
+        //auto sp = msg.get()->setPoints;
+        //std::cout<<"\n"<<sp[0];
+         ROS_INFO("Received:");
+
+      }         
       void readSetPointRequest()
       {
+        // ROS_INFO("readSetPointRequest");
+        //std::cout<<"\nMCM";
+        //subscriber_ = nh_->subscribe("v2x/incoming/DENM",1,&denm_to_bordertypechangeprofile::receive_denm,this);
+        
+  
+        /*
         nh_ ->getParam("PARAMS/UTMZone", utm_zone_);
         nh_ ->getParam("PARAMS/SouthHemi",southern_hemisphere);
         nh_ ->getParam("v2xStationID", v2xStationID);        
@@ -184,20 +207,22 @@ class setpointrequest_to_mcm
           }
         }
         print_debug(msg, platoonInformation);
+        */
         
       }
     virtual void run_func()
     {
       readSetPointRequest();
-      setPointRequest_publisher.publish(msg); 
-      setPointRequest_publisher_sim.publish(msg);
+     // setPointRequest_publisher.publish(msg); 
+     // setPointRequest_publisher_sim.publish(msg);
         
     }
     void run()
     {
     ros::Rate r(rate); 
     while(ros::ok())run_func();
-    }    
+    }  
+    /*  
     void print_debug(mcm_dmove_mcm_dmove::MCM msg, adore::fun::PlatooningInformation platoonInformation)
     {
       if(debug_level)
@@ -219,7 +244,7 @@ class setpointrequest_to_mcm
       x = x  +  std::cos(psi)*(vehicle_a+vehicle_b+vehicle_c) ;
       y = y  +  std::sin(psi)*(vehicle_a+vehicle_b+vehicle_c) ;
     }
-
+*/
 };
 } // namespace if_ROS
 } // namespace adore
@@ -233,7 +258,9 @@ int main(int argc,char **argv)
     adore::if_ROS::setpointrequest_to_mcm sprtmcm;
     sprtmcm.init(argc, argv, 20., "setpointrequest_to_mcm_node");
     //ROS_INFO("setpointrequest_to_mcm_node namespace is: %s", sprtmcm.nh_ ->getNamespace().c_str());
-    sprtmcm.run();
+    //sprtmcm.run();
+    ros::Rate rate(20.);
+    ros::spin();
     return 0;
 
 }
