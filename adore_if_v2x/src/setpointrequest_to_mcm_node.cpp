@@ -81,9 +81,9 @@ class setpointrequest_to_mcm
         last_t_ = -1.0;
         this->rate = rate;
         ros::init(argc, argv, nodename);
-         nh_ = new ros::NodeHandle();
-         SetPointRequestSubscriber= nh_->subscribe("FUN/SetPointRequest",1,&setpointrequest_to_mcm::receive_spr,this);
-         MCM_publisher = nh_ ->advertise<mcm_dmove_mcm_dmove::MCM>("v2x/MCM",1);
+        nh_ = new ros::NodeHandle();
+        SetPointRequestSubscriber= nh_->subscribe("FUN/SetPointRequest",1,&setpointrequest_to_mcm::receive_spr,this);
+        MCM_publisher = nh_ ->advertise<mcm_dmove_mcm_dmove::MCM>("v2x/MCM",1);
         ///platooningstate_reader = fun_factory.getPlatooningStateReader();
         nh_->getParam("PARAMS/Vehicle/a", vehicle_a);
         nh_->getParam("PARAMS/Vehicle/b", vehicle_b);
@@ -212,7 +212,7 @@ int main(int argc,char **argv)
     adore::if_ROS::setpointrequest_to_mcm sprtmcm;
     sprtmcm.init(argc, argv, 20., "setpointrequest_to_mcm_node");
     //ROS_INFO("setpointrequest_to_mcm_node namespace is: %s", sprtmcm.nh_ ->getNamespace().c_str());
-    sprtmcm.run();
+    //sprtmcm.run();
     ros::Rate rate(20.);
     ros::spin();
     return 0;

@@ -160,10 +160,16 @@ target_link_libraries(denm_to_checkpoint PRIVATE ${catkin_LIBRARIES} coordinate_
 #target_include_directories( mcm_to_prediction_node PRIVATE include ${catkin_INCLUDE_DIRS})
 #target_link_libraries(mcm_to_prediction_node PRIVATE ${catkin_LIBRARIES} )
 
-#add_executable(mcm_to_platoon_node)
-#target_sources(mcm_to_platoon_node PRIVATE src/mcm_to_platoon_node.cpp)
-#target_include_directories( mcm_to_platoon_node PRIVATE include ${catkin_INCLUDE_DIRS})
-#target_link_libraries(mcm_to_platoon_node PRIVATE ${catkin_LIBRARIES} )
+add_executable(mcm_to_platoon_node)
+target_sources(mcm_to_platoon_node PRIVATE src/mcm_to_platoon_node.cpp)
+target_include_directories( mcm_to_platoon_node PRIVATE include ${catkin_INCLUDE_DIRS})
+target_link_libraries(mcm_to_platoon_node PRIVATE ${catkin_LIBRARIES}       
+      coordinate_conversion::coordinate_conversion 
+      libadore::fun 
+      libadore::mad 
+      libadore::params
+      dlib::dlib
+)
 
 add_executable(setpointrequest_to_mcm_node)
 target_sources(setpointrequest_to_mcm_node PRIVATE src/setpointrequest_to_mcm_node.cpp)
@@ -232,7 +238,7 @@ install(TARGETS
     denm_to_bordertypechangeprofile_node
     denm_to_checkpoint
 #    mcm_to_prediction_node
-#    mcm_to_platoon_node
+    mcm_to_platoon_node
     setpointrequest_to_mcm_node
     v2x_trafficlights_node
 #    denm_plotter_node

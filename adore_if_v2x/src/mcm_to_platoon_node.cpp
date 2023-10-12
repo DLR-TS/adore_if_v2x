@@ -12,30 +12,29 @@
  *   Reza Dariani - initial API and implementation 
  ********************************************************************************/
 #include <ros/ros.h>
-#include <adore_if_ros/baseapp.h>
-#include <adore_if_ros_msg/CooperativePlanningSet.h>
-#include <adore/fun/afactory.h>
-#include <adore/params/afactory.h>
-#include <adore/mad/coordinateconversion.h>
+#include <adore_if_ros_msg/CooperativePlanning.h>
+#include <coordinate_conversion/coordinate_conversion.h>
 #include <mcm_dmove_mcm_dmove/MCM.h>
+#include <adore/env/traffic/cooperativeusersprediction.h>
+#include <adore/env/afactory.h>
+#include <adore/params/afactory.h>
 
 
-
+/*POOR DESIGN
+WRITER SHOULD BE USED*/
 
 namespace adore
 {
     namespace if_ROS
     {
-        class mcm_to_platoon  : public Baseapp
+        class mcm_to_platoon  
         {
             private:
-            adore::mad::AReader<adore::fun::VehicleMotionState9d>* state_reader_;
+            adore_if_ros_msg::CooperativePlanning cp_msg;
             adore::mad::AWriter<adore::env::CooperativeUserPrediction>* coopUserWriter;
-            adore::env::CooperativeUserPrediction cup;
-            adore::fun::VehicleMotionState9d state_;
-            ros::Subscriber MCMSubscriber_sim;  
-            ros::Subscriber MCMSubscriber_sim_1;   
-            ros::Subscriber MCMSubscriber_;         
+            adore::env::CooperativeUserPrediction cup; 
+            ros::Subscriber MCMSubscriber_;  
+            ros::Publisher publisher;       
             int utm_zone_;
             int generationDeltaTime;
             int mem_generationDeltaTime; //memory
@@ -43,70 +42,66 @@ namespace adore
             int v2xStationID;
             bool ignoreOldMsg;
             int debug_level;
+            ros::NodeHandle* nh_;
             public:
 
         void init(int argc, char **argv, double rate, std::string nodename)
         {
-            v2xStationID = 0;  
-            Baseapp::init(argc, argv, rate, nodename);
-            Baseapp::initSim();     
-            std::function<void()> run_fcn = (std::bind(&mcm_to_platoon::run_func, this)); 
-            adore::if_ROS::FUN_Factory fun_factory(getRosNodeHandle());
-            adore::if_ROS::ENV_Factory env_factory(getRosNodeHandle());
-            state_reader_ = fun_factory.getVehicleMotionStateReader();
-            coopUserWriter = env_factory.getCooperativeUserWriter();
-            Baseapp::addTimerCallback(run_fcn);
+            v2xStationID = 0; 
+            ros::init(argc, argv, nodename);   
+            nh_ = new ros::NodeHandle();
+            MCMSubscriber_ = nh_->subscribe("v2x/MCM",1,&mcm_to_platoon::receive_mcm,this);
+            publisher = nh_ ->advertise<adore_if_ros_msg::CooperativePlanning>("v2x/MCM_Prediction",1);
+            //cup publisher here
+           // adore::if_ROS::ENV_Factory env_factory(nh_);
+            //coopUserWriter = env_factory.getCooperativeUserWriter();
             dt_betweenMessages = 0;
         }
         void receive_mcm(mcm_dmove_mcm_dmove::MCM msg)
         {
-        
-            cup.clear();
-            getParam("PARAMS/UTMZone", utm_zone_);
-            getParam("v2xStationID", v2xStationID); 
-            getParam("PARAMS/nlp_planner/MCM_senser_debug_level", debug_level);           
+            nh_->getParam("PARAMS/UTMZone", utm_zone_);
+            nh_->getParam("v2xStationID", v2xStationID); 
             if(v2xStationID == msg.header.stationID.value) 
             {
                 std::cout<<"\n[Ignored] I hear myself"<<v2xStationID<<"\t"<<msg.header.stationID.value;
                 return; //not process ego MCM
-            }
-            
-
-            if((state_reader_)!=0 && state_reader_->hasData() )
-            {
-                state_reader_->getData(state_);
-                double t = state_.getTime();   //any better way to read time?
-                double T = t;
+            }  
+            double T = msg.maneuverCoordination.generationDeltaTime.value;    
+            double t = T;       
+   
+            cup.clear();
                 //printf("\n%i",msg.maneuverCoordination.mcmParameters.maneuverContainer.vehicleManeuver.plannedTrajectory.elements.size());
                 //printf("\n%i",msg.maneuverCoordination.mcmParameters.maneuverContainer.vehicleManeuver.plannedTrajectory.count);
-                auto msg_vm = msg.maneuverCoordination.mcmParameters;
-                std::cout<<"\nI am listening to id "<<msg.header.stationID.value<<" right now ";
+            auto msg_vm = msg.maneuverCoordination.mcmParameters;
+            std::cout<<"\nI am listening to id "<<msg.header.stationID.value<<" right now ";
     
-                generationDeltaTime = msg.maneuverCoordination.generationDeltaTime.value;
-                dt_betweenMessages = generationDeltaTime - mem_generationDeltaTime;
-                mem_generationDeltaTime = generationDeltaTime;
+            generationDeltaTime = msg.maneuverCoordination.generationDeltaTime.value;
+            dt_betweenMessages = generationDeltaTime - mem_generationDeltaTime;
+            mem_generationDeltaTime = generationDeltaTime;
 
-                cup.setId(msg.header.stationID.value);
-     
-                cup.setLanePosition(msg_vm.maneuverContainer.vehicleManeuver.lanePosition.value);
-                //printf("\n%i",msg_vm.maneuverContainer.vehicleManeuver.targetAutomationLevel.value);
-                cup.setTargetAutomationLevel(msg_vm.maneuverContainer.vehicleManeuver.targetAutomationLevel.value);
-                cup.setToletatedDistanceAhead((double) msg_vm.maneuverContainer.vehicleManeuver.vehicleCapabilities.toleratedDistanceAheadCmps.value/100 );
-                cup.setToletatedDistanceBehind((double) msg_vm.maneuverContainer.vehicleManeuver.vehicleCapabilities.toleratedDistanceBehindCmps.value/100);
-                cup.setVehicleLength(msg_vm.maneuverContainer.vehicleManeuver.vehicleLength.vehicleLengthValue.value);
-
-                cup.setVehicleWidth((double)msg_vm.maneuverContainer.vehicleManeuver.vehicleWidth.value);
-
+            cup.setId(msg.header.stationID.value);
+            cp_msg.id = cup.id;
+            cup.setLanePosition(msg_vm.maneuverContainer.vehicleManeuver.lanePosition.value);
+            cp_msg.lane_position = cup.lane_position;
+            //printf("\n%i",msg_vm.maneuverContainer.vehicleManeuver.targetAutomationLevel.value);
+            cup.setTargetAutomationLevel(msg_vm.maneuverContainer.vehicleManeuver.targetAutomationLevel.value);
+            cp_msg.target_automation_level = cup.target_automation_level;
+            cup.setToletatedDistanceAhead((double) msg_vm.maneuverContainer.vehicleManeuver.vehicleCapabilities.toleratedDistanceAheadCmps.value/100 );
+            cp_msg.tolerated_distance_ahead = cup.toletated_distance_ahead;
+            cup.setToletatedDistanceBehind((double) msg_vm.maneuverContainer.vehicleManeuver.vehicleCapabilities.toleratedDistanceBehindCmps.value/100);
+            cp_msg.tolerated_distance_behind = cup.toletated_distance_behind;
+            cup.setVehicleLength(msg_vm.maneuverContainer.vehicleManeuver.vehicleLength.vehicleLengthValue.value);
+            cp_msg.vehicle_length = cup.vehicleLength;
+            cup.setVehicleWidth((double)msg_vm.maneuverContainer.vehicleManeuver.vehicleWidth.value);
+            cp_msg.vehicle_width = cup.vehicleWidth;
                 
-                if(msg_vm.maneuverContainer.vehicleManeuver.plannedTrajectory.elements.size()>0)
-                {
-                    double X, Y;
-                    double lat_deg = (double)msg_vm.basicContainer.referencePosition.latitude.value;
-                    double lon_deg = (double)msg_vm.basicContainer.referencePosition.longitude.value;
-                    adore::mad::CoordinateConversion::LatLonToUTMXY(lat_deg,lon_deg,utm_zone_,X,Y);      
-                     //  std::cout<<"\n"<<utm_zone_;
-                   // std::cout<<"\n"<<X<<"\t"<<Y<<"\t"<<lat_deg<<"\t"<<lon_deg;//<<"\t"<<msg_vm.maneuverContainer.vehicleManeuver.plannedTrajectory.elements.size()<<"\t"<< cooperativePlanning.id;
-                    for(int i=0; i<msg_vm.maneuverContainer.vehicleManeuver.plannedTrajectory.elements.size();i++)
+            if(msg_vm.maneuverContainer.vehicleManeuver.plannedTrajectory.elements.size()>0)
+            {
+                double X, Y;
+                double lat_deg = (double)msg_vm.basicContainer.referencePosition.latitude.value;
+                double lon_deg = (double)msg_vm.basicContainer.referencePosition.longitude.value;
+                adore::mad::CoordinateConversion::LatLonToUTMXY(lat_deg,lon_deg,utm_zone_,X,Y);      
+                 for(int i=0; i<msg_vm.maneuverContainer.vehicleManeuver.plannedTrajectory.elements.size();i++)
                     {     
                           //HEADING IS MISSING       
                         double dx = ((double)msg_vm.maneuverContainer.vehicleManeuver.plannedTrajectory.elements[i].deltaXCm.value * 0.01);
@@ -117,28 +112,40 @@ namespace adore
                         Y += dy;
                         //std::cout<<"\n"<<X<<"\t"<<Y<<"\t"<<heading;
                         cup.currentTrajectory.x.push_back(X);
+                        cp_msg.prediction[i].x = X;
                         cup.currentTrajectory.y.push_back(Y);
+                        cp_msg.prediction[i].y = Y;
                         cup.currentTrajectory.psi.push_back(heading);
+                        cp_msg.prediction[i].psi = heading;
                         cup.currentTrajectory.t0.push_back(t);
+                        cp_msg.prediction[i].t0 = t;
                         cup.currentTrajectory.v.push_back(((double)msg_vm.maneuverContainer.vehicleManeuver.plannedTrajectory.elements[i].absSpeed.value));
+                        cp_msg.prediction[i].v = ((double)msg_vm.maneuverContainer.vehicleManeuver.plannedTrajectory.elements[i].absSpeed.value);
                         //std::cout<<"\n"<<((double)msg_vm.maneuverContainer.vehicleManeuver.plannedTrajectory.elements[i].absSpeed.value  * 0.01);
                         t += (double)msg_vm.maneuverContainer.vehicleManeuver.plannedTrajectory.elements[i].deltaTimeCs.value  * 0.1;
                         cup.currentTrajectory.t1.push_back(t);
+                        cp_msg.prediction[i].t1 = t;
+                        
                     }
-                coopUserWriter->write(cup); 
-                print_debug(msg);
-            }
+                    publisher.publish(cp_msg);
+                    //coopUserWriter->write(cup); 
+                    
+
+                    
+                    print_debug(msg);
+                
+                }
             
         
-        }
-    }
+            }
+       
 
     virtual void run_func()
     {
-         MCMSubscriber_= getRosNodeHandle()->subscribe<mcm_dmove_mcm_dmove::MCM>("MCM_receiver/MCM_in",1,&mcm_to_platoon::receive_mcm,this);
-        MCMSubscriber_= getRosNodeHandle()->subscribe<mcm_dmove_mcm_dmove::MCM>("mcm_receiver/MCM_in",1,&mcm_to_platoon::receive_mcm,this);
-        MCMSubscriber_sim= getRosNodeHandle()->subscribe<mcm_dmove_mcm_dmove::MCM>("MCM_in",1,&mcm_to_platoon::receive_mcm,this);
-        MCMSubscriber_sim_1= getRosNodeHandle()->subscribe<mcm_dmove_mcm_dmove::MCM>("v2x/incoming/MCM",1,&mcm_to_platoon::receive_mcm,this);
+        //MCMSubscriber_= getRosNodeHandle()->subscribe<mcm_dmove_mcm_dmove::MCM>("MCM_receiver/MCM_in",1,&mcm_to_platoon::receive_mcm,this);
+        //MCMSubscriber_= getRosNodeHandle()->subscribe<mcm_dmove_mcm_dmove::MCM>("mcm_receiver/MCM_in",1,&mcm_to_platoon::receive_mcm,this);
+        //MCMSubscriber_sim= getRosNodeHandle()->subscribe<mcm_dmove_mcm_dmove::MCM>("MCM_in",1,&mcm_to_platoon::receive_mcm,this);
+        //MCMSubscriber_sim_1= getRosNodeHandle()->subscribe<mcm_dmove_mcm_dmove::MCM>("v2x/incoming/MCM",1,&mcm_to_platoon::receive_mcm,this);
         //
     }
     void print_debug(mcm_dmove_mcm_dmove::MCM msg)
@@ -166,7 +173,7 @@ int main(int argc, char** argv)
 {    
     adore::if_ROS::mcm_to_platoon mcm2platoon;
     mcm2platoon.init(argc, argv, 20., "mcm_to_platoon_node");
-    ROS_INFO("mcm_to_platoon_node namespace is: %s", mcm2platoon.getRosNodeHandle()->getNamespace().c_str());
-    mcm2platoon.run();
+    //ROS_INFO("mcm_to_platoon_node namespace is: %s", mcm2platoon.getRosNodeHandle()->getNamespace().c_str());
+    //mcm2platoon.run();
     return 0;
 }
