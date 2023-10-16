@@ -58,17 +58,21 @@ FROM adore_if_v2x_requirements_base AS adore_if_v2x_builder
 
 ARG PROJECT
 WORKDIR /tmp/${PROJECT}/${PROJECT}
-RUN mkdir -p build 
+RUN mkdir -p build/install 
 
 SHELL ["/bin/bash", "-c"]
 WORKDIR /tmp/${PROJECT}/${PROJECT}/build
 
 
 RUN source /opt/ros/noetic/setup.bash && \
-    cmake .. && \
-    cmake --build . --config Release --target install -- -j $(nproc) && \
+    cmake .. \
+             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+             -DCMAKE_BUILD_TYPE=Release \
+             -DCMAKE_INSTALL_PREFIX="install" && \
+    cmake --build . -v --config Release --target install -- -j $(nproc) && \ 
     cpack -G DEB && find . -type f -name "*.deb" | xargs mv -t . && \
-    mv CMakeCache.txt CMakeCache.txt.build
+    mv CMakeCache.txt CMakeCache.txt.build && \
+    rm -rf devel
 
 #RUN cp -r /tmp/${PROJECT}/build/devel/lib/${PROJECT} /tmp/${PROJECT}/build/install/lib/${PROJECT}
 
