@@ -72,7 +72,7 @@
   <depend>adore_if_ros_msg</depend>
   <depend>adore_if_ros</depend>
   <depend>v2xsim</depend>
-  <depend>mcm_dmove_mcm_dmove</depend>
+  <depend>mcm_dmove</depend>
 
  
 

@@ -14,7 +14,7 @@
 #include <ros/ros.h>
 #include <adore_if_ros_msg/CooperativePlanning.h>
 #include <coordinate_conversion/coordinate_conversion.h>
-#include <mcm_dmove_mcm_dmove/MCM.h>
+#include <mcm_dmove/MCM.h>
 #include <adore/env/traffic/cooperativeusersprediction.h>
 #include <adore/env/afactory.h>
 #include <adore/params/afactory.h>
@@ -57,7 +57,7 @@ namespace adore
             //coopUserWriter = env_factory.getCooperativeUserWriter();
             dt_betweenMessages = 0;
         }
-        void receive_mcm(mcm_dmove_mcm_dmove::MCM msg)
+        void receive_mcm(mcm_dmove::MCM msg)
         {
             nh_->getParam("PARAMS/UTMZone", utm_zone_);
             nh_->getParam("v2xStationID", v2xStationID); 
@@ -148,7 +148,7 @@ namespace adore
         //MCMSubscriber_sim_1= getRosNodeHandle()->subscribe<mcm_dmove_mcm_dmove::MCM>("v2x/incoming/MCM",1,&mcm_to_platoon::receive_mcm,this);
         //
     }
-    void print_debug(mcm_dmove_mcm_dmove::MCM msg)
+    void print_debug(mcm_dmove::MCM msg)
     {
       if(debug_level)
       {

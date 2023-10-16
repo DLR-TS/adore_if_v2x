@@ -16,7 +16,7 @@
 #include <adore/fun/afactory.h>
 #include <adore/params/afactory.h>
 #include <adore/mad/coordinateconversion.h>
-#include <mcm_dmove_mcm_dmove/MCM.h>
+#include <mcm_dmove/MCM.h>
 
 
 namespace adore
@@ -53,7 +53,7 @@ namespace adore
             Baseapp::addTimerCallback(run_fcn);
             dt_betweenMessages = 0;
         }
-        void receive_mcm(mcm_dmove_mcm_dmove::MCM msg)
+        void receive_mcm(mcm_dmove::MCM msg)
         {
             prediction.occupancy.clear();
             getParam("PARAMS/UTMZone", utm_zone_);
@@ -117,7 +117,7 @@ namespace adore
 
     virtual void run_func()
     {
-        MCMSubscriber_= getRosNodeHandle()->subscribe<mcm_dmove_mcm_dmove::MCM>("v2x/incoming/MCM",1,&mcm_to_prediction::receive_mcm,this);
+        MCMSubscriber_= getRosNodeHandle()->subscribe<mcm_dmove::MCM>("v2x/incoming/MCM",1,&mcm_to_prediction::receive_mcm,this);
         prediction_publisher.publish(predictioSetMsg);   
     }
 

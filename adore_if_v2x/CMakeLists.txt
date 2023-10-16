@@ -63,7 +63,7 @@ find_package(catkin REQUIRED COMPONENTS
     dsrc_v2_spatem_pdu_descriptions
     dsrc_v2_srem_pdu_descriptions
     cpm_v1_19_cpm_pdu_descriptions
-    mcm_dmove_mcm_dmove
+    mcm_dmove
     coordinate_conversion
     plotlablib
 
@@ -99,7 +99,7 @@ find_package(apps CONFIG REQUIRED)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES v2x_if_ros
-  CATKIN_DEPENDS roscpp std_msgs message_runtime geometry_msgs nav_msgs adore_if_ros_msg  mcm_dmove_mcm_dmove
+  CATKIN_DEPENDS roscpp std_msgs message_runtime geometry_msgs nav_msgs adore_if_ros_msg  mcm_dmove
 #  DEPENDS system_lib
 )
 

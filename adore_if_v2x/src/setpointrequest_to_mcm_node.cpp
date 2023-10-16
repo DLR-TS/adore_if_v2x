@@ -20,7 +20,7 @@
 //#include <adore_if_ros/paramsfactory.h>
 #include <adore/fun/setpointrequest.h>
 #include <coordinate_conversion/coordinate_conversion.h>
-#include <mcm_dmove_mcm_dmove/MCM.h>
+#include <mcm_dmove/MCM.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <adore_if_ros_msg/SetPointRequest.h>
@@ -39,7 +39,7 @@ namespace if_ROS
 class setpointrequest_to_mcm  
 {
   private: 
-      mcm_dmove_mcm_dmove::MCM msg;
+      mcm_dmove::MCM msg;
       //adore::mad::AReader<adore::fun::SetPointRequest>* ntr_reader_;  
       //adore::mad::AReader<adore::fun::VehicleMotionState9d>* state_reader_;
       //adore::mad::AReader<adore::fun::PlatooningInformation>* platooningstate_reader;
@@ -50,8 +50,8 @@ class setpointrequest_to_mcm
       //adore::fun::VehicleMotionState9d state_;
       ros::Subscriber SetPointRequestSubscriber;   
       ros::Publisher MCM_publisher; 
-      mcm_dmove_mcm_dmove::TrajectoryPoint tj_point;
-      mcm_dmove_mcm_dmove::PlannedTrajectory pl_tj ;  
+      mcm_dmove::TrajectoryPoint tj_point;
+      mcm_dmove::PlannedTrajectory pl_tj ;  
       adore::params::APVehicle* pvehicle_;    
       double last_t_;  
       int utm_zone_; 
@@ -83,7 +83,7 @@ class setpointrequest_to_mcm
         ros::init(argc, argv, nodename);
         nh_ = new ros::NodeHandle();
         SetPointRequestSubscriber= nh_->subscribe("FUN/SetPointRequest",1,&setpointrequest_to_mcm::receive_spr,this);
-        MCM_publisher = nh_ ->advertise<mcm_dmove_mcm_dmove::MCM>("v2x/MCM",1);
+        MCM_publisher = nh_ ->advertise<mcm_dmove::MCM>("v2x/MCM",1);
         ///platooningstate_reader = fun_factory.getPlatooningStateReader();
         nh_->getParam("PARAMS/Vehicle/a", vehicle_a);
         nh_->getParam("PARAMS/Vehicle/b", vehicle_b);
