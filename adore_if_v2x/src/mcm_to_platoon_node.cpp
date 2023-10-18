@@ -47,10 +47,10 @@ namespace adore
 
         void init(int argc, char **argv, double rate, std::string nodename)
         {
-            v2xStationID = 0; 
+           // v2xStationID = 0; 
             ros::init(argc, argv, nodename);   
             nh_ = new ros::NodeHandle();
-            MCMSubscriber_ = nh_->subscribe("v2x/MCM",1,&mcm_to_platoon::receive_mcm,this);
+            MCMSubscriber_ = nh_->subscribe<mcm_dmove::MCM>("v2x/incoming/MCM",1,&mcm_to_platoon::receive_mcm,this);
             publisher = nh_ ->advertise<adore_if_ros_msg::CooperativePlanning>("v2x/MCM_Prediction",1);
             //cup publisher here
            // adore::if_ROS::ENV_Factory env_factory(nh_);
@@ -64,7 +64,7 @@ namespace adore
             if(v2xStationID == msg.header.stationID.value) 
             {
                 std::cout<<"\n[Ignored] I hear myself"<<v2xStationID<<"\t"<<msg.header.stationID.value;
-                return; //not process ego MCM
+               // return; //not process ego MCM
             }  
             double T = msg.maneuverCoordination.generationDeltaTime.value;    
             double t = T;       
@@ -74,7 +74,7 @@ namespace adore
                 //printf("\n%i",msg.maneuverCoordination.mcmParameters.maneuverContainer.vehicleManeuver.plannedTrajectory.count);
             auto msg_vm = msg.maneuverCoordination.mcmParameters;
             std::cout<<"\nI am listening to id "<<msg.header.stationID.value<<" right now ";
-    
+            
             generationDeltaTime = msg.maneuverCoordination.generationDeltaTime.value;
             dt_betweenMessages = generationDeltaTime - mem_generationDeltaTime;
             mem_generationDeltaTime = generationDeltaTime;
@@ -84,6 +84,7 @@ namespace adore
             cup.setLanePosition(msg_vm.maneuverContainer.vehicleManeuver.lanePosition.value);
             cp_msg.lane_position = cup.lane_position;
             //printf("\n%i",msg_vm.maneuverContainer.vehicleManeuver.targetAutomationLevel.value);
+            
             cup.setTargetAutomationLevel(msg_vm.maneuverContainer.vehicleManeuver.targetAutomationLevel.value);
             cp_msg.target_automation_level = cup.target_automation_level;
             cup.setToletatedDistanceAhead((double) msg_vm.maneuverContainer.vehicleManeuver.vehicleCapabilities.toleratedDistanceAheadCmps.value/100 );
@@ -94,13 +95,15 @@ namespace adore
             cp_msg.vehicle_length = cup.vehicleLength;
             cup.setVehicleWidth((double)msg_vm.maneuverContainer.vehicleManeuver.vehicleWidth.value);
             cp_msg.vehicle_width = cup.vehicleWidth;
-                
+              
             if(msg_vm.maneuverContainer.vehicleManeuver.plannedTrajectory.elements.size()>0)
             {
                 double X, Y;
                 double lat_deg = (double)msg_vm.basicContainer.referencePosition.latitude.value;
                 double lon_deg = (double)msg_vm.basicContainer.referencePosition.longitude.value;
-                adore::mad::CoordinateConversion::LatLonToUTMXY(lat_deg,lon_deg,utm_zone_,X,Y);      
+                adore::mad::CoordinateConversion::LatLonToUTMXY(lat_deg,lon_deg,utm_zone_,X,Y); 
+               // std::cout<<"\n"<<  lat_deg<<"\t"<< lon_deg<<"\t"<<  utm_zone_<<"\t"<<X;
+                cp_msg.prediction.resize(msg_vm.maneuverContainer.vehicleManeuver.plannedTrajectory.elements.size());
                  for(int i=0; i<msg_vm.maneuverContainer.vehicleManeuver.plannedTrajectory.elements.size();i++)
                     {     
                           //HEADING IS MISSING       
@@ -133,9 +136,9 @@ namespace adore
 
                     
                     print_debug(msg);
-                
+              
                 }
-            
+                /**/
         
             }
        
@@ -175,5 +178,7 @@ int main(int argc, char** argv)
     mcm2platoon.init(argc, argv, 20., "mcm_to_platoon_node");
     //ROS_INFO("mcm_to_platoon_node namespace is: %s", mcm2platoon.getRosNodeHandle()->getNamespace().c_str());
     //mcm2platoon.run();
+    ros::Rate rate(20.);
+    ros::spin();    
     return 0;
 }

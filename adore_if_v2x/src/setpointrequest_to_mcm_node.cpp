@@ -83,7 +83,7 @@ class setpointrequest_to_mcm
         ros::init(argc, argv, nodename);
         nh_ = new ros::NodeHandle();
         SetPointRequestSubscriber= nh_->subscribe("FUN/SetPointRequest",1,&setpointrequest_to_mcm::receive_spr,this);
-        MCM_publisher = nh_ ->advertise<mcm_dmove::MCM>("v2x/MCM",1);
+        MCM_publisher = nh_ ->advertise<mcm_dmove::MCM>("v2x/outgoing/MCM",1);
         ///platooningstate_reader = fun_factory.getPlatooningStateReader();
         nh_->getParam("PARAMS/Vehicle/a", vehicle_a);
         nh_->getParam("PARAMS/Vehicle/b", vehicle_b);
@@ -110,6 +110,7 @@ class setpointrequest_to_mcm
         nh_->getParam("PARAMS/SouthHemi",southern_hemisphere);
         nh_->getParam("v2xStationID", v2xStationID);        
         msg.header.stationID.value = v2xStationID;
+        std::cout<<"\nStation ID "<<v2xStationID<<" published";
         msg.maneuverCoordination.generationDeltaTime.value = getGenerationDeltaTime();
         double X, Y,PSI, T;
         int NumPointsPlannedTrajectory;
@@ -136,7 +137,7 @@ class setpointrequest_to_mcm
 				else{
 					NumPointsPlannedTrajectory = std::min((int)MAX_POINTS_IN_MSG,(int)spr_size);
 				}              
-        std::cout<<"\n"<<utm_zone_<<"\t"<<X<<"\t"<<Y<<"\t"<<spr_size;
+        //std::cout<<"\n"<<utm_zone_<<"\t"<<X<<"\t"<<Y<<"\t"<<spr_size;
         pl_tj.elements.clear() ; 
         pl_tj.count= NumPointsPlannedTrajectory;
 				for( int i=0;i<NumPointsPlannedTrajectory;i++)  //sparsing
